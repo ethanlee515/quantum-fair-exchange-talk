@@ -1,0 +1,491 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usetheme[progressbar=frametitle,numbering=fraction]{metropolis}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{braket}
+\usepackage{colortbl}
+\usepackage{etoolbox}
+\usepackage{fontawesome5}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows.meta,calc,positioning}
+
+% Speaker notes are embedded in the source but hidden in the normal deck.
+% The small wrapper file used by `make notes` defines \showspeakernotes.
+\ifdefined\showspeakernotes
+  \setbeameroption{show notes on second screen=right}
+  % pgfpages duplicates each logical page when composing the two-screen PDF;
+  % disabling hyperlinks avoids duplicate PDF destinations in the notes copy.
+  \hypersetup{draft}
+\else
+  \setbeameroption{hide notes}
+\fi
+
+% -----------------------------------------------------------------------------
+% Visual language
+% -----------------------------------------------------------------------------
+
+\definecolor{QFEInk}{HTML}{17324D}
+\definecolor{QFETeal}{HTML}{087E8B}
+\definecolor{QFEPale}{HTML}{E8F3F4}
+\definecolor{QFEGold}{HTML}{E5A23B}
+\definecolor{QFEGoldPale}{HTML}{FFF2D8}
+\definecolor{QFECoral}{HTML}{C85151}
+\definecolor{QFECoralPale}{HTML}{F9E8E6}
+\definecolor{QFEMuted}{HTML}{5E6D78}
+\definecolor{QFEFog}{HTML}{F4F7F8}
+
+\setbeamercolor{normal text}{fg=QFEInk,bg=white}
+\setbeamercolor{alerted text}{fg=QFECoral}
+\setbeamercolor{example text}{fg=QFETeal}
+\setbeamercolor{frametitle}{fg=white,bg=QFEInk}
+\setbeamercolor{progress bar}{fg=QFETeal,bg=QFEPale}
+\setbeamercolor{progress bar in head/foot}{fg=QFETeal,bg=QFEPale}
+\setbeamercolor{title separator}{fg=QFETeal}
+\setbeamercolor{palette primary}{fg=white,bg=QFEInk}
+\setbeamercolor{block title}{fg=white,bg=QFEInk}
+\setbeamercolor{block body}{fg=QFEInk,bg=QFEFog}
+\setbeamercolor{block title alerted}{fg=white,bg=QFECoral}
+\setbeamercolor{block body alerted}{fg=QFEInk,bg=QFECoralPale}
+\setbeamercolor{block title example}{fg=white,bg=QFETeal}
+\setbeamercolor{block body example}{fg=QFEInk,bg=QFEPale}
+\setbeamercolor{takeaway}{fg=QFEInk,bg=QFEPale}
+\setbeamercolor{question}{fg=QFEInk,bg=QFEGoldPale}
+\setbeamercolor{risk}{fg=QFEInk,bg=QFECoralPale}
+
+\setbeamerfont{title}{series=\bfseries,size=\huge}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
+\setbeamerfont{block title}{series=\bfseries}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{bibliography item}[text]
+\metroset{block=fill}
+
+\newcommand{\asset}[1]{\ensuremath{\text{\$}_{#1}}}
+\newcommand{\qasset}[1]{\ensuremath{\ket{\text{\$}_{#1}}}}
+\newcommand{\rejlabel}{\ensuremath{\mathsf{Rej}}}
+\newcommand{\badinput}[1]{\textcolor{QFECoral}{\textsf{#1}}}
+
+\newcommand{\takeaway}[1]{%
+  \begin{beamercolorbox}[wd=\textwidth,sep=0.85ex,rounded=true,center]{takeaway}
+    #1
+  \end{beamercolorbox}%
+}
+
+\newcommand{\questionbox}[1]{%
+  \begin{beamercolorbox}[wd=\textwidth,sep=1.0ex,rounded=true,center]{question}
+    #1
+  \end{beamercolorbox}%
+}
+
+\newcommand{\riskbox}[2]{%
+  \begin{beamercolorbox}[wd=\linewidth,sep=0.9ex,rounded=true]{risk}
+    \textbf{#1}\par\smallskip
+    \small #2
+  \end{beamercolorbox}%
+}
+
+% One fixed-coordinate diagram is reused for all four functionality slides.
+% Arguments: Alice input, Bob input, Alice output, Bob output. Empty output
+% arguments suppress the corresponding arrow while preserving the bounding box.
+\newcommand{\exchangefunctionality}[4]{%
+  \begin{tikzpicture}[
+      >={Latex[length=2.6mm]},
+      flow/.style={->,very thick,draw=QFETeal},
+      party/.style={font=\large\bfseries,text=QFEInk},
+      assetnode/.style={draw=QFETeal!55,fill=QFEPale,rounded corners=2pt,
+        minimum width=2.15cm,minimum height=0.72cm,font=\large},
+      function/.style={draw=QFEInk,fill=QFEInk,rounded corners=4pt,
+        minimum width=3.25cm,minimum height=1.05cm,align=center,
+        text=white,font=\bfseries}
+    ]
+    \path[use as bounding box] (-5.15,-2.35) rectangle (5.15,2.25);
+
+    \node[party] (alice) at (-3.65,1.85) {Alice};
+    \node[party] (bob)   at ( 3.65,1.85) {Bob};
+    \node[assetnode] (ain) at (-3.65,0.78) {#1};
+    \node[assetnode] (bin) at ( 3.65,0.78) {#2};
+    \node[function] (fe) at (0,-0.05) {Fair Exchange};
+
+    \draw[flow] (alice.south) -- (ain.north);
+    \draw[flow] (ain.south) -- ([xshift=-0.72cm]fe.north);
+    \draw[flow] (bob.south) -- (bin.north);
+    \draw[flow] (bin.south) -- ([xshift=0.72cm]fe.north);
+
+    \ifstrempty{#3}{}{
+      \node[assetnode] (aout) at (-3.65,-1.52) {#3};
+      \draw[flow] ([xshift=-0.72cm]fe.south) -- (aout.north);
+    }
+    \ifstrempty{#4}{}{
+      \node[assetnode] (bout) at (3.65,-1.52) {#4};
+      \draw[flow] ([xshift=0.72cm]fe.south) -- (bout.north);
+    }
+  \end{tikzpicture}%
+}
+
+% -----------------------------------------------------------------------------
+% Metadata (sourced from the technical manuscript in the submodule)
+% -----------------------------------------------------------------------------
+
+\title{Quantum Fair Exchange}
+\subtitle{How do we exchange a state that cannot be copied?}
+\author[Chung, Lee, Raizes, Thyagarajan]{%
+  \texorpdfstring{%
+    Hao Chung \quad Yi Lee \quad Justin Raizes\\[0.15em]
+    Sri AravindaKrishnan Thyagarajan%
+  }{Hao Chung, Yi Lee, Justin Raizes, Sri AravindaKrishnan Thyagarajan}}
+\institute{%
+  LayerZero Labs \;\textperiodcentered\; University of Maryland\\
+  NTT Research \;\textperiodcentered\; University of Sydney}
+\date{Ongoing work}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% 1. Title
+% -----------------------------------------------------------------------------
+
+\begin{frame}[plain]
+  \vfill
+  {\usebeamerfont{title}\color{QFEInk}\inserttitle\par}
+  \vspace{0.4em}
+  {\usebeamerfont{subtitle}\color{QFEMuted}\insertsubtitle\par}
+  \vspace{0.8em}
+  {\color{QFETeal}\rule{0.48\textwidth}{1.2pt}\par}
+
+  \vspace{1.2em}
+  {\small\bfseries\insertauthor\par}
+  \vspace{0.65em}
+  {\footnotesize\color{QFEMuted}\insertinstitute\par}
+
+  \vfill
+  {\footnotesize\bfseries\color{QFEGold}\insertdate\par}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 2. Motivation
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Fair Exchange: Who Goes First?}
+  \begin{center}
+    \begin{tikzpicture}[
+        >={Latex[length=3mm]},
+        party/.style={draw=QFEInk,fill=QFEFog,circle,minimum size=1.55cm,
+          very thick,font=\bfseries},
+        trade/.style={<->,line width=1.5pt,draw=QFETeal}
+      ]
+      \node[party] (alice) at (-4.2,0) {Alice};
+      \node[party] (bob) at (4.2,0) {Bob};
+      \draw[trade] (alice) -- (bob)
+        node[pos=0.35,above=5pt,font=\large\bfseries,text=QFEInk]
+          {\faMoneyBill\; \$100}
+        node[pos=0.67,below=5pt,font=\large\bfseries,text=QFEInk]
+          {\faIcon{ticket-alt}\; Digital ticket};
+      \node[font=\Large\bfseries,text=QFEGold] at (0,1.28) {Who goes first?};
+    \end{tikzpicture}
+  \end{center}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.485\textwidth}
+      \riskbox{If Alice pays first\ldots}{Bob can take the money and disappear.}
+    \column{0.485\textwidth}
+      \riskbox{If Bob sends first\ldots}{Alice can take the ticket and disappear.}
+  \end{columns}
+
+  \vspace{0.55em}
+  \takeaway{\textbf{Goal:} Either both get what they want, or neither does.}
+
+  \note{
+    \begin{itemize}
+      \item Start from the intuitive problem, before introducing cryptographic definitions.
+      \item ``Digital ticket'' can mean a concert ticket, game activation or serial code, or gift-card code.
+      \item Alice and Bob do not necessarily trust each other; either may cheat.
+      \item Pause at ``Who goes first?'' before explaining the two cheating cases.
+      \item Keep this slide mostly visual and light on text.
+    \end{itemize}
+  }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 3. Trusted intermediary
+% -----------------------------------------------------------------------------
+
+\begin{frame}{The Obvious Solution: A Trusted Third Party}
+  \centering
+    \begin{tikzpicture}[
+        >={Latex[length=2.7mm]},
+        party/.style={draw=QFEInk,fill=QFEFog,circle,minimum size=1.18cm,
+          very thick,font=\bfseries},
+        bank/.style={draw=QFEInk,fill=QFEGoldPale,rounded corners=3pt,
+          minimum width=3.1cm,minimum height=0.75cm,very thick,font=\bfseries},
+        payment/.style={->,very thick,draw=QFEGold},
+        ticket/.style={->,very thick,draw=QFETeal}
+      ]
+      \node[party] (alice) at (-4.4,-0.72) {Alice};
+      \node[party] (bob) at (4.4,-0.72) {Bob};
+      \node[bank] (bank) at (0,0.92) {\faUniversity\quad Bank / card network};
+
+      \draw[payment] (alice.north east) --
+        node[above left=-1pt,font=\small\bfseries,text=QFEGold!70!black] {\$100}
+        (bank.south west);
+      \draw[payment] (bank.south east) --
+        node[above right=-1pt,font=\small\bfseries,text=QFEGold!70!black] {payment}
+        (bob.north west);
+      \draw[ticket] (bob.west) --
+        node[below=4pt,font=\small\bfseries,text=QFETeal] {\faIcon{ticket-alt}\quad Digital ticket (direct)}
+        (alice.east);
+    \end{tikzpicture}
+
+  \vspace{0.15em}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \begin{block}{Trusted institutions can intervene}
+        \small Credit-card disputes and chargebacks; online marketplaces.
+      \end{block}
+    \column{0.48\textwidth}
+      \begin{alertblock}{Cash-like exchange?}
+        \small Can Alice and Bob exchange directly?
+      \end{alertblock}
+  \end{columns}
+
+  \vspace{-0.1em}
+  \scriptsize \textbf{Cryptocurrency:} direct transactions need not use a trusted
+  intermediary. \quad \textbf{Later:} quantum money as digital cash.
+
+  \vspace{0.3em}
+  \takeaway{\textbf{Fair exchange matters when Alice and Bob transact directly.}}
+
+  \note{
+    \footnotesize
+    \begin{itemize}
+      \item The obvious real-world solution is to trust someone else.
+      \item With a credit card, a trusted institution can intervene through a dispute or chargeback mechanism.
+      \item Do not dwell on the exact mechanics of the ticket example.
+      \item Contrast this with physical cash: the central bank does not participate in a particular hand-to-hand transaction.
+      \item This motivates digital value that can transfer without a trusted intermediary approving every transaction.
+      \item Cryptocurrency is the familiar example; do not claim it has no trusted parties at all.
+      \item Preview quantum money here and explain it on the next slide.
+      \item The ticket travels directly from Bob to Alice; only the payment path uses the trusted institution.
+    \end{itemize}
+  }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 4. Two kinds of digital cash
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Digital Cash: Blockchain vs. Quantum Money}
+  \small
+  \renewcommand{\arraystretch}{1.45}
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabularx}{\textwidth}{%
+      >{\raggedright\arraybackslash\bfseries}p{0.18\textwidth}
+      >{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}X}
+    \toprule
+    & \textbf{Cryptocurrency / Blockchain} & \textbf{Quantum Money} \\
+    \midrule
+    Issuance & Mining / protocol & Bank / issuer \\
+    Prevent double spending & Global ledger / consensus & No-cloning + cryptography \\
+    Transfer & Record the transfer on a global blockchain & Send the quantum state \\
+    \rowcolor{QFEGoldPale}
+    Fair exchange & Atomic swaps / smart contracts &
+      \centering\arraybackslash\textcolor{QFEGold}{\Large\bfseries ???} \\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.85em}
+  \takeaway{\faMoneyBill\quad \textbf{Quantum money behaves more like a digital banknote.}}
+
+  \note{
+    \begin{itemize}
+      \item Cryptocurrency and quantum money are two very different approaches to digital cash.
+      \item For cryptocurrency, issuance can be governed by mining or a protocol; for quantum money, imagine a bank minting quantum banknotes.
+      \item The key contrast is transfer: a blockchain records it globally, whereas quantum money transfers the state itself.
+      \item The bank may mint quantum money without mediating every payment.
+      \item Atomic swaps and smart contracts can implement fair exchange for blockchain-based assets.
+      \item Pause at the final ``???'' and ask for the analogue for quantum money.
+      \item No-cloning alone is not a construction of secure quantum money; this table is deliberately simplified.
+    \end{itemize}
+  }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 5--8. The functionality sequence
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Classical Fair Exchange}
+  \centering
+  \exchangefunctionality{\asset{A}}{\asset{B}}{\asset{B}}{\asset{A}}
+
+  \takeaway{If both inputs are valid, \textbf{swap them}.}
+
+  \note{
+    \begin{itemize}
+      \item Abstract away the implementation and imagine an ideal fair-exchange box.
+      \item Alice submits her classical asset \asset{A}; Bob submits \asset{B}.
+      \item If both inputs are valid, the functionality swaps them.
+      \item Keep this slide simple; cheating and rejection come next.
+    \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}{Classical Fair Exchange: Rejection}
+  \centering
+  \exchangefunctionality{\asset{A}}{\badinput{garbage}}{\textcolor{QFECoral}{\rejlabel}}{}
+
+  \takeaway{If Bob submits an invalid asset, Alice receives \textbf{\rejlabel}.}
+
+  \note{
+    \begin{itemize}
+      \item Bob may cheat and submit garbage instead of a valid asset.
+      \item The ideal functionality rejects and tells Alice \rejlabel.
+      \item There is no need to return \asset{A}: this is classical information, so Alice can already retain or know her input.
+      \item This apparently trivial point becomes important when the asset is quantum.
+    \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}{Quantum Fair Exchange: Rejection?}
+  \centering
+  \exchangefunctionality{\qasset{A}}{\badinput{garbage}}{\textcolor{QFECoral}{\rejlabel}}{}
+
+  \questionbox{\Large\bfseries Where is Alice's money?}
+
+  \note{
+    \begin{itemize}
+      \item Change only one thing from the previous slide: Alice's asset is now a quantum state.
+      \item Classically, returning only \rejlabel{} was fine because Alice could retain her input.
+      \item Alice may have sent her only copy of \qasset{A} into the protocol.
+      \item If Bob cheats and the protocol simply rejects, Alice may have lost her asset.
+      \item Pause on ``Where is Alice's money?''
+      \item This is why the classical ideal functionality is no longer the right notion.
+    \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}{Quantum Fair Exchange: Rejection}
+  \centering
+  \exchangefunctionality{\qasset{A}}{\badinput{garbage}}{\qasset{A}\; +\; \textcolor{QFECoral}{\rejlabel}}{}
+
+  \takeaway{If Bob submits an invalid asset, Alice gets her \textbf{quantum asset back}.}
+
+  \note{
+    \begin{itemize}
+      \item Rejection must preserve the honest party's asset.
+      \item If Bob cheats, Alice should recover a usable quantum asset, not merely learn that the exchange failed.
+      \item This is nontrivial because Alice cannot generally keep a backup copy of an unknown quantum state.
+      \item This is the key change in the ideal functionality caused by no-cloning.
+      \item Next, formalize what counts as a valid or usable returned asset, especially when verification can transform the state.
+    \end{itemize}
+  }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 9. Related work
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Literature Survey}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.31\textwidth}
+      \begin{block}{Classical fair exchange}
+        \small
+        Studied since the early 1980s.
+
+        \medskip
+        Contract signing, trusted third parties, and a long line of related work.
+      \end{block}
+
+    \column{0.335\textwidth}
+      \begin{block}{MPQC with identifiable abort}
+        \small
+        Identify the cheating party and abort.
+
+        \medskip
+        \cite{alon-et-al-identifiable-abort,chung-et-al-pvia}
+      \end{block}
+
+    \column{0.31\textwidth}
+      \begin{block}{Verifiable QFHE}
+        \small
+        A key technical building block.
+
+        \medskip
+        \cite{alagic-et-al-vqfhe}
+      \end{block}
+  \end{columns}
+
+  \vspace{0.9em}
+  \questionbox{\textbf{Accountability is not restitution:}
+    identifying a cheater does not restore a lost quantum asset.}
+
+  \note{
+    \begin{itemize}
+      \item Keep the classical literature deliberately brief; it dates to the early 1980s.
+      \item If useful: ``Aravind probably knows much more of this history than I do, so I'll skip ahead about forty years.''
+      \item The closest quantum line here is multiparty quantum computation with identifiable abort.
+      \item Identifiable abort gives accountability: identify the cheating party and abort.
+      \item Fair exchange also asks what happens to the honest party's quantum asset.
+      \item Mention VQFHE only as a technical building block; review it later.
+    \end{itemize}
+  }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 10. Main goals
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Main Goals}
+  \small
+  We propose an ideal functionality for \textbf{quantum fair exchange}, adapting
+  classical fair exchange to the limitations imposed by quantum no-cloning.
+
+  \smallskip
+  \textbf{We aim to show two complementary results:}
+
+  \smallskip
+  \begin{columns}[T,onlytextwidth]
+    \column{0.475\textwidth}
+      \begin{alertblock}{1\quad Classical TTP: impossible in general}
+        Quantum fair exchange is impossible in general, even with a
+        \textbf{classical trusted third party}.
+      \end{alertblock}
+
+    \column{0.475\textwidth}
+      \begin{exampleblock}{2\quad Limited quantum capabilities suffice}
+        A trusted party may use \textbf{quantum pre-processing and storage}.
+
+        \smallskip
+        Online, it performs no quantum computation other than \textbf{SWAP gates}.
+      \end{exampleblock}
+  \end{columns}
+
+  \vspace{-0.1em}
+  \takeaway{Finally, extend the construction to \textbf{$n$-party exchange}.}
+
+  \note{
+    \begin{itemize}
+      \item These are goals and ongoing results, so say ``we aim to show,'' not ``we prove.''
+      \item Emphasize the complementarity: a fully classical trusted party is insufficient, but surprisingly limited quantum capabilities suffice.
+      \item The resource question is not simply whether a trusted party exists, but which quantum capabilities it needs.
+      \item Do not explain the technical reason yet; begin the next section with the impossibility result and its intuition.
+      \item Mention the $n$-party extension briefly; it need not have equal visual weight.
+    \end{itemize}
+  }
+\end{frame}
+
+% Bibliography is an unnumbered backup frame rather than part of the ten-frame
+% narrative above.
+\begin{frame}[allowframebreaks,noframenumbering]{References}
+  \scriptsize
+  \bibliographystyle{abbrv}
+  \bibliography{Quantum-Fair-Exchange/references}
+\end{frame}
+
+\end{document}
