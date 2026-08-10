@@ -12,10 +12,11 @@ Current checkpoint:
 `quantum-fair-exchange-slides-v9.md`
 
 The presentation is unfinished. We now have the motivation, a four-slide
-**impossibility result** that avoids the BB84 basis-guessing detour, two short
-preliminary slides, and a four-slide **candidate construction**. The next major
-content task is the n-party extension and conclusion; the VQFHE coverage is
-deliberately marked for later revision.
+operational **impossibility reduction** without the BB84 detour, six one-idea
+preliminary slides, and a candidate construction ending in a separate
+preprocessing/resource-bank summary. The next major content task is the
+n-party extension and conclusion; the VQFHE coverage is deliberately marked
+for later revision.
 
 ---
 
@@ -106,7 +107,10 @@ The final `???` is deliberate. Pause there and say something like:
 
 # Fair Exchange Functionality Sequence
 
-This is designed as several visually almost-identical slides, changing only one thing at a time.
+This is designed as several visually identical slides, changing only one thing
+at a time. Each slide has exactly one tall, rounded `Fair Exchange` box. Assets
+and outcomes are plain labels on horizontal arrows; there are no surrounding
+asset boxes.
 
 ## 4. Classical Fair Exchange
 
@@ -115,17 +119,11 @@ Alice inputs `$_A`; Bob inputs `$_B`.
 Ideal box swaps them:
 
 ```text
- Alice                         Bob
-   |                            |
-  $_A                          $_B
-   |                            |
-   v                            v
-       +------------------+
-       |   Fair Exchange  |
-       +------------------+
-   |                            |
-   v                            v
-  $_B                          $_A
+ Alice                 +------------------+                 Bob
+ $_A ----------------->|                  |<----------------- $_B
+                       |   Fair Exchange  |
+ $_B <-----------------|                  |-----------------> $_A
+                       +------------------+
 ```
 
 If both inputs are valid: **swap them**.
@@ -137,17 +135,11 @@ If both inputs are valid: **swap them**.
 Bob now cheats:
 
 ```text
- Alice                         Bob
-   |                            |
-  $_A                        garbage
-   |                            |
-   v                            v
-       +------------------+
-       |   Fair Exchange  |
-       +------------------+
-   |
-   v
-  Rej
+ Alice                 +------------------+                 Bob
+ $_A ----------------->|                  |<------------- garbage
+                       |   Fair Exchange  |
+ Rej <-----------------|                  |
+                       +------------------+
 ```
 
 Alice only gets `Rej`.
@@ -165,17 +157,11 @@ Change exactly one thing:
 `$_A` → `|$_A⟩`.
 
 ```text
- Alice                         Bob
-   |                            |
- |$_A⟩                      garbage
-   |                            |
-   v                            v
-       +------------------+
-       |   Fair Exchange  |
-       +------------------+
-   |
-   v
-  Rej
+ Alice                 +------------------+                 Bob
+ |$_A⟩ --------------->|                  |<------------- garbage
+                       |   Fair Exchange  |
+ Rej <-----------------|                  |
+                       +------------------+
 ```
 
 Then put prominently:
@@ -195,17 +181,11 @@ Do NOT get into technical details about verification/recoverability here. Those 
 Now modify the output:
 
 ```text
- Alice                         Bob
-   |                            |
- |$_A⟩                      garbage
-   |                            |
-   v                            v
-       +------------------+
-       |   Fair Exchange  |
-       +------------------+
-   |
-   v
- |$_A⟩ + Rej
+ Alice                 +------------------+                 Bob
+ |$_A⟩ --------------->|                  |<------------- garbage
+                       |   Fair Exchange  |
+ |$_A⟩ + Rej <---------|                  |
+                       +------------------+
 ```
 
 If Bob cheats, Alice gets her quantum asset back.
@@ -227,10 +207,11 @@ Current structure:
 
 - **Multiparty quantum computation with identifiable abort**
   - identify the cheating party and abort
-  - `\cite{alon-et-al-identifiable-abort, chung-et-al-pvia}`
+  - `[ACCHLS21, CHTZ24]`
 
 - **Verifiable quantum fully homomorphic encryption (VQFHE)**
   - a key technical building block
+  - `[ADSS17]`
 
 Possible joke / oral transition:
 
@@ -241,6 +222,10 @@ Main MPQC connection:
 Identifiable abort gives **accountability**, but fair exchange additionally cares about what happens to the honest party's quantum asset.
 
 VQFHE should only be mentioned here. Its technical review comes later.
+
+Use mnemonic alphabetic citations throughout, with one surname initial per
+author. In particular, the six-author 2021 paper must render as `ACCHLS21`, not
+the truncated BibTeX-alpha form `ACH+21`.
 
 ---
 
@@ -280,7 +265,7 @@ Important: this is an ongoing project, so retain language like **“we aim to sh
 
 ---
 
-# 11–14. Impossibility Without the BB84 Detour
+# 10–13. Operational Impossibility Without the BB84 Detour
 
 The talk uses a direct reduction from fair exchange to an operational cloning
 game. It assumes the exchanged assets are **selectively uncloneable**: given
@@ -288,88 +273,136 @@ one valid instance of each input, an efficient algorithm cannot choose one
 input and produce two usable versions of that same identified asset, except
 with negligible probability.
 
-The quantitative statement must be phrased carefully:
+For the talk, hard-code perfect honest correctness rather than introducing a
+parameter $p$:
 
-> Honest exchange success $p$ in $T$ rounds gives a cloning attack with success
-> $\Omega(p/T)$.
+> A $T$-round fair exchanger with a classical TTP yields a procedure that
+> duplicates one of the two inputs with probability $\Omega(1/T)$.
 
-Thus, when $p\approx1$ and $T$ is polynomial, the cloner succeeds with
-non-negligible probability. The $1/T$ quantity belongs to the cloning attack,
-not directly to the protocol's honest success probability.
+The general speaker-note version replaces this by $p/(2T)$, up to correctness
+and fairness errors. The $1/T$ scale belongs to the cloning attack, not to the
+honest protocol's success probability.
 
 The four slides are:
 
 1. **Impossibility with a Classical Trusted Party**
-   - state the direct reduction and the $\Omega(p/T)$ cloning probability;
-   - keep the theorem informal while the precise model/error parameters remain ongoing.
+   - assume a $T$-round fair-exchange protocol with a classical TTP;
+   - show honest swapping and asset-preserving abort in one line each;
+   - state the $\Omega(1/T)$ cloning procedure;
+   - reduce unclonability to the short footer “one identified asset cannot
+     become two usable copies.”
 
-2. **Intuition: Somewhere, the Exchange Must Happen**
-   - use the simple cartoon of guessing a decisive round $\hat t$;
-   - deliver Alice's message and drop Bob's;
-   - either Alice is left with nothing, violating fairness, or returning her
-     asset gives Alice and Bob two versions of the same input.
+2. **Somewhere, the Exchange Must Happen**
+   - use only the endpoint timeline and one useful boundary $t^*$;
+   - some neighboring pair of cuts witnesses the handoff;
+   - there are $T$ possible locations, explaining the $1/T$ cost.
 
-3. **Formal Reduction: Two Adjacent Cuts**
-   - replace the sharp-round cartoon by accept probabilities at adjacent cuts;
-   - a telescoping/hybrid argument supplies a gap of order $p/T$;
-   - fork only the classical trusted-party state.
+3. **Reduction: Fork the Classical World**
+   - show the crossing messages at rounds $t^*$ and $t^*+1$;
+   - run the honest prefix and copy only the classical TTP state;
+   - form two locally consistent continuations;
+   - show no cut probabilities or hybrid formulas.
 
-4. **Formal Reduction: Let One Message Through**
+4. **Reduction: Let One Message Through**
    - reuse the two-round message diagram and cross out one direction;
    - show one continuation accepting Alice's asset while the other rejects and
      returns Alice's asset;
    - conclude that the reduction produced two usable copies.
 
-Do not put the two-case probability analysis or intersection bound on slides.
-Mention in speaker notes that ordinary textbook no-cloning is not by itself a
+Do not show $q_P(t)$, a telescoping sum, adjacent-cut inequalities, the
+two-case probability analysis, or an intersection bound. Those details may
+remain in speaker notes only. Ordinary textbook no-cloning is not by itself a
 quantitative security game; the direct version assumes operational
 uncloneability of the assets. The BB84 game in the manuscript is one concrete
 way to instantiate that premise.
 
 ---
 
-# 15–20. Preliminaries and Candidate Construction
+# 14–24. Preliminaries and Candidate Construction
 
-The positive direction currently uses six slides.
+The former two-slide preliminary review is now six separate one-idea slides.
 
-1. **Preliminaries I: Quantum Error Correction**
-   - one logical qubit becomes an
-     $[[\ell_{\mathrm{code}},1,d_{\mathrm{code}}]]$ block;
-   - supported Clifford gates act coordinate by coordinate;
-   - QEC supplies the damage budget needed to stop and replace a cheater.
+1. **QEC: Spread One Qubit Across a Block**
+   - one logical qubit becomes an entangled
+     $[[\ell_{\mathrm{code}},1,d_{\mathrm{code}}]]$ block, not many copies;
+   - bounded physical damage is correctable.
 
-2. **VQFHE: Compute, Then Verify**
+2. **Transversal Operations: Compute Coordinatewise**
+   - use $X_L=X^{\otimes n}$ as the entire visible example;
+   - coordinatewise computation keeps local damage local;
+   - caveat orally that the example is code-dependent.
+
+3. **Quantum Authentication: Detect Tampering**
+   - show `KeyGen / Auth / attacker / VerDec` as a security game;
+   - acceptance implies that the output is essentially the original state;
+   - an attacker may force rejection but cannot alter the state undetected.
+
+4. **The Trap Code: Hide Data Among Tests**
+   - show encoded data, $0$-traps, and $+$-traps under a secret permutation and
+     Pauli pad;
+   - explain the two complementary tests;
+   - retain the caveat that our TTP stores only QEC plus a pad and introduces
+     fresh operation-dependent traps during evaluation.
+
+5. **VQFHE: Compute, Then Verify**
    - deliberately marked `COVERAGE TODO`;
-   - shows KeyGen / Enc / Eval / VerDec pictorially;
-   - distinguishes honest correctness from verifiability;
-   - displays the standard hidden data / $0$-trap / $+$-trap ciphertext pattern;
-   - explains why final VQFHE rejection alone cannot recover a unique asset.
+   - show KeyGen / Enc / Eval / VerDec pictorially;
+   - distinguish honest correctness from “correct output or reject” against a
+     malicious server;
+   - motivate Bob running Alice's verifier without receiving unprotected
+     money;
+   - explain orally that VQFHE rejection alone does not restore a consumed
+     unique asset.
 
-3. **Construction I: Input Encoding**
+6. **Homomorphic Evaluation: Act Without Finding the Data**
+   - secretly shuffle one data register with a $0$-test and a $+$-test;
+   - apply $G^{\otimes3}$ to all three;
+   - because the evaluator cannot locate the data, it must treat data and tests
+     identically.
+
+The construction then uses five slides.
+
+7. **Construction I: Input Encoding**
    - the TTP prepares encoded, Pauli-padded EPR halves;
    - Alice returns only a classical Bell-measurement label;
    - the TTP updates its Pauli key and now holds the encoded input.
 
-4. **Construction II: Gate Evaluation**
+8. **Construction II: Gate Evaluation**
    - four-message picture
      `TTP → Bob → TTP → Alice → TTP`;
    - Bob receives one hidden data register plus fresh $0/+$ traps;
-   - Alice checks returned traps against fresh gate-output traps;
+   - Alice checks returned traps against fresh expected-output traps;
    - repeat over $j\in[\ell_{\mathrm{code}}]$.
 
-5. **Construction III: Circuit Evaluation**
-   - for each Clifford instruction, call the checked-gate primitive twice;
+9. **Construction III: Circuit Evaluation**
+   - for every circuit instruction, call the checked-gate primitive twice;
    - first Bob evaluates $g_t$ and Alice checks;
    - then Alice evaluates $I$ and Bob checks;
-   - the two dashed four-arrow boxes give the intended eight-message visual.
+   - draw eight **unlabelled** arrows inside two dashed boxes; the box labels
+     $\pi_{\mathsf{gate}}(g_t)$ and $\pi_{\mathsf{gate}}(I)$ are sufficient;
+   - keep gate-family jargon and measurement details out of the visible slide.
 
-6. **Construction IV: Full Exchange**
-   - encode both inputs;
-   - run one one-sided verified computation on each asset;
-   - if both accept, cross the outputs; otherwise return each input to its
-     original owner;
-   - state the resource boundary: preprocessing plus online quantum
-     storage/routing/SWAP and classical checks/key updates.
+10. **Preprocessing: The Quantum Resource Bank**
+    - collect encoded EPR halves, padded encoded $\ket0$ and $\ket T=T\ket+$
+      blocks, measurement traps, and expected-output traps for every
+      slot/coordinate/candidate operation;
+    - show the classical ledger of Pauli keys, secret permutations, and
+      expected trap outcomes;
+    - one oral sentence: consuming $\ket T$ in a checked gadget implements a
+      $T$ gate;
+    - after preprocessing, quantum work is storage, communication, and
+      routing/SWAP; selection, checks, and key updates are classical.
+
+11. **Construction IV: Full Exchange**
+    - encode both inputs;
+    - run one one-sided verified computation on each asset;
+    - if both accept, cross the outputs; otherwise return each input to its
+      original owner;
+    - focus the slide on delayed release rather than repeating the full
+      resource list.
+
+For Construction I–III, any repetition brace placed at the right edge must be
+mirrored so that it faces left toward the message sequence.
 
 Important manuscript-alignment point:
 
@@ -383,8 +416,10 @@ registers—data plus two traps—so an encoded gate has $3\ell_{\mathrm{code}}$
 evaluator registers in total.
 
 The visible language should remain **candidate construction** / **construction
-idea**. The one-sided coherent-attack proof and some non-Clifford/measurement
-details are still unfinished in the manuscript.
+idea**. The one-sided coherent-attack proof and some universal-gate and
+measurement details are still unfinished in the manuscript. Avoid the word
+“Clifford” in visible slide text; the manuscript-specific caveat may remain in
+speaker notes.
 
 ---
 
@@ -422,11 +457,20 @@ The intended narrative is:
 
 → QEC makes bounded damage repairable
 
+→ coordinatewise operations keep damage local
+
+→ quantum authentication detects undetected tampering
+
+→ the trap code hides data among complementary tests
+
 → VQFHE supplies the compute-then-verify blueprint
 
 → teleport each asset into **quantum custody**
 
 → trap-check one coordinate, then compile a verification circuit
+
+→ preprocess a quantum **resource bank**, including encoded EPRs, traps,
+workspace, and magic states
 
 → verify both assets before releasing either one
 
@@ -453,17 +497,19 @@ Roughly:
 - Main Goals: ~1.5–2 min
 
 The four-slide impossibility section should take about **6–8 minutes**. The six
-new preliminary/construction slides likely need **12–15 minutes**, depending on
-how much VQFHE detail survives.
+preliminary slides likely need **7–10 minutes**, and the five construction/
+resource slides another **8–11 minutes**. This makes the 45-minute budget tight
+once the n-party extension and conclusion are added; rehearsal should decide
+which preliminary slides become quick visual beats or backup material.
 
 Tentative remaining allocation:
 
 - Impossibility: **6–8 min**
-- QEC + VQFHE review: **~4–5 min**
-- Protocol construction/security: **8–10 min**
+- QEC + authentication + trap-code + VQFHE review: **~7–10 min**
+- Protocol construction/resource boundary: **8–11 min**
 - n-party extension + conclusion: **2–3 min**
 
 Next task:
 
 > **Design the n-party extension and conclusion, then rehearse timing and decide
-> how much of the VQFHE placeholder belongs in the 45-minute version.**
+> which of the six preliminary slides stay in the 45-minute main path.**

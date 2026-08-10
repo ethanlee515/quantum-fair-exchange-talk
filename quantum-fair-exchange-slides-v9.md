@@ -108,20 +108,16 @@ Later, we will consider another possibility:
 
 # Classical Fair Exchange
 
-[Large visual: an ideal fair-exchange functionality.]
+[Large visual: one tall central fair-exchange box. All assets are labels on
+plain horizontal arrows; use exactly the same coordinates on the next three
+slides.]
 
 ```text
- Alice                         Bob
-   |                            |
-  $_A                          $_B
-   |                            |
-   v                            v
-       +------------------+
-       |   Fair Exchange  |
-       +------------------+
-   |                            |
-   v                            v
-  $_B                          $_A
+ Alice                 +------------------+                 Bob
+ $_A ----------------->|                  |<----------------- $_B
+                       |   Fair Exchange  |
+ $_B <-----------------|                  |-----------------> $_A
+                       +------------------+
 ```
 
 If both inputs are valid, **swap them**.
@@ -137,20 +133,15 @@ If both inputs are valid, **swap them**.
 
 # Classical Fair Exchange: Rejection
 
-[Use essentially the same visual as the previous slide, but Bob submits garbage.]
+[Reuse the exact same tall-box geometry. Bob submits garbage; suppress only
+Bob's output arrow.]
 
 ```text
- Alice                         Bob
-   |                            |
-  $_A                        garbage
-   |                            |
-   v                            v
-       +------------------+
-       |   Fair Exchange  |
-       +------------------+
-   |
-   v
-  Rej
+ Alice                 +------------------+                 Bob
+ $_A ----------------->|                  |<------------- garbage
+                       |   Fair Exchange  |
+ Rej <-----------------|                  |
+                       +------------------+
 ```
 
 If Bob submits an invalid asset, Alice receives **Rej**.
@@ -166,20 +157,15 @@ If Bob submits an invalid asset, Alice receives **Rej**.
 
 # Quantum Fair Exchange: Rejection?
 
-[Use the same layout as the classical rejection slide. Change only Alice's asset from classical to quantum.]
+[Reuse the exact same tall-box geometry. Change only Alice's input from
+classical to quantum.]
 
 ```text
- Alice                         Bob
-   |                            |
- |$_A⟩                      garbage
-   |                            |
-   v                            v
-       +------------------+
-       |   Fair Exchange  |
-       +------------------+
-   |
-   v
-  Rej
+ Alice                 +------------------+                 Bob
+ |$_A⟩ --------------->|                  |<------------- garbage
+                       |   Fair Exchange  |
+ Rej <-----------------|                  |
+                       +------------------+
 ```
 
 ## Where is Alice's money?
@@ -197,20 +183,15 @@ If Bob submits an invalid asset, Alice receives **Rej**.
 
 # Quantum Fair Exchange: Rejection
 
-[Keep the same diagram, but now return Alice's quantum asset on rejection.]
+[Keep the exact same diagram, but change Alice's output to return her quantum
+asset on rejection.]
 
 ```text
- Alice                         Bob
-   |                            |
- |$_A⟩                      garbage
-   |                            |
-   v                            v
-       +------------------+
-       |   Fair Exchange  |
-       +------------------+
-   |
-   v
- |$_A⟩ + Rej
+ Alice                 +------------------+                 Bob
+ |$_A⟩ --------------->|                  |<------------- garbage
+                       |   Fair Exchange  |
+ |$_A⟩ + Rej <---------|                  |
+                       +------------------+
 ```
 
 If Bob submits an invalid asset, Alice gets her quantum asset back.
@@ -232,10 +213,11 @@ If Bob submits an invalid asset, Alice gets her quantum asset back.
 
 - **Multiparty quantum computation with identifiable abort**
   - Identify the cheating party and abort
-  - \cite{alon-et-al-identifiable-abort, chung-et-al-pvia}
+  - `[ACCHLS21, CHTZ24]`
 
 - **Verifiable quantum fully homomorphic encryption (VQFHE)**
   - A key technical building block
+  - `[ADSS17]`
 
 ### Speaker notes
 
@@ -245,6 +227,9 @@ If Bob submits an invalid asset, Alice gets her quantum asset back.
 - Identifiable abort gives accountability: if someone cheats, we can identify the cheating party and abort.
 - For fair exchange, accountability alone does not answer what happens to the honest party's quantum asset.
 - Mention VQFHE only as a technical building block here; defer the technical review until after the main goals / theorems.
+- Use mnemonic alphabetic labels, with one author initial per surname, rather
+  than numeric references. This makes `[ACCHLS21, CHTZ24]` and `[ADSS17]`
+  readable as names while presenting.
 
 ---
 
@@ -275,132 +260,101 @@ Finally, we extend the construction to the **$n$-party exchange** setting.
 
 # Impossibility with a Classical Trusted Party
 
-[Main-result slide. Keep the statement informal because the project and its exact error parameters are still being finalized.]
+[Main-result slide. Hard-code perfect honest correctness for the talk and keep
+the unclonability premise to one line.]
 
-The two inputs are **uncloneable** if, given one valid instance of each, no
-efficient algorithm can choose one input and produce two usable versions of
-that same identified asset, except with negligible probability.
-
-Suppose a $T$-round fair-exchange protocol:
-
-- succeeds honestly with probability $p$,
-- preserves an honest party's asset on rejection, and
-- uses a trusted party whose state is entirely **classical**.
-
-Then the protocol gives an efficient cloning algorithm $\mathcal C_\Pi$ with
+Assume a $T$-round fair-exchange protocol $\Pi$ with a **classical TTP**:
 
 $$
-\Pr[\mathcal C_\Pi\text{ duplicates one input}]
-    \geq \frac{p}{2T}
-    \qquad\text{(idealized setting)}.
+\bigl(\ket{\$_A},\ket{\$_B}\bigr)
+  \xrightarrow{\quad\Pi\quad}
+\bigl(\ket{\$_B},\ket{\$_A}\bigr).
 $$
 
-For $p\approx 1$ and polynomial $T$, this probability is non-negligible.
+On abort, an honest party keeps its own asset.
 
-> **Contradiction: the exchanged assets were assumed to be uncloneable.**
+> **$\Pi$ becomes a cloning procedure:** it duplicates one of the two inputs
+> with probability $\Omega(1/T)$.
+
+**One identified asset $\not\longmapsto$ two usable copies.**
 
 ### Speaker notes
 
-- The important correction is that $1/T$ is the scale of the **cloning attack's success**, not an upper bound of $1/T$ on honest protocol success.
-- Equivalently, if the assets are $\varepsilon$-uncloneable, then $p\leq O(T\varepsilon)$, up to the protocol's correctness and fairness errors.
-- The manuscript's perfect-setting sketch obtains a constant such as $p/(2T)$; the constant is not important for this talk.
-- This formulation replaces the BB84 basis-guessing game with a black-box operational assumption: given one valid asset, producing two states that both count as that same asset has negligible probability.
+- Hard-code $p=1$ in the visible statement. The general form replaces
+  $1/(2T)$ by $p/(2T)$, up to fairness and correctness errors.
+- The $1/T$ quantity is the scale of the **cloning attack's success**, not an
+  upper bound on honest protocol success.
+- Operational unclonability means that, from one identified asset, producing
+  two usable versions of that same asset has negligible probability.
 - Textbook deterministic no-cloning alone is not a quantitative security game; the operational unclonability premise is what makes the direct reduction sound.
-- The cloning game may give the reduction an independent second exchange input and lets it name which of the two inputs it duplicated; this changes at most a constant factor.
 - Alice and Bob may exchange quantum messages. The restriction is that the trusted party has no quantum state that must remain uncopyable.
-- This is the application-facing version of the result. The manuscript's BB84 embedding is what lifts the contradiction to its broader rank-at-least-two accepting-space statement; omit that lift from the talk.
+- BB84 is one concrete witness used by the longer manuscript proof; omit it
+  from the talk.
+- Keep the result informal while the precise model and error parameters are
+  still being finalized.
 
 ---
 
-# Intuition: Somewhere, the Exchange Must Happen
+# Somewhere, the Exchange Must Happen
 
-[Use a horizontal timeline from a cut before the protocol to a cut after the protocol, with a highlighted guessed boundary $\hat t$.]
+[Use a horizontal timeline from the beginning to the end, with one useful
+boundary $t^*$ highlighted.]
 
 ```text
- cut 0                    guessed boundary t-hat                 cut T
+ cut 0                      useful boundary t*                   cut T
 
- Alice: Rej + keeps $_A        ... ? ...                   Acc + gets $_B
- Bob:   Rej + keeps $_B        ... ? ...                   Acc + gets $_A
+ Alice keeps $_A                 ...                  Alice gets $_B
+ Bob keeps $_B                   ...                  Bob gets $_A
 ```
 
-In the simple cartoon, there is a decisive round where ownership changes.
+Some neighboring pair of cuts must witness the handoff.
 
-Pick $\hat t\leftarrow[T]$ uniformly:
-
-> With probability $1/T$, we cut exactly at that round.
-
-At the cut, let Alice's message through but drop Bob's:
-
-- If Alice does not recover her asset, she is **left with nothing**.
-- If Alice does recover it, Alice and Bob both hold Alice's asset: a **clone**.
+> With $T$ possible boundaries, the reduction loses one factor of $T$.
 
 ### Speaker notes
 
-- This is intuition, not yet the formal probability argument.
-- Before the protocol, stopping means both parties reject and retain their own assets. After a successful protocol, both accept and hold the other party's asset.
-- Pretend first that there is a single sharp round in which this changes. Guessing that round costs the factor $1/T$.
-- Deliver Alice's message to Bob and suppress Bob's message to Alice.
-- Bob has crossed the exchange boundary and may obtain Alice's asset; Alice has not.
-- “Alice is left with nothing” is already a fairness violation. If the protocol repairs that violation by returning Alice's input, the same input now exists at both outputs.
-- A real quantum protocol can change its acceptance probability gradually. The next slide replaces the sharp-round cartoon with adjacent hybrids.
+- Keep this operational. Do not define cut-acceptance probabilities or show a
+  telescoping calculation.
+- Initially, stopping leaves each party with its own asset. At honest
+  completion, the assets have swapped.
+- Formally, if the parties already disagree at one cut, use that cut.
+  Otherwise, some party's outcome changes across neighboring cuts.
+- One of the $T$ locations is therefore useful. The reduction may hard-wire
+  it; the random-guess cartoon is only intuition for the $1/T$ scale.
+- The next two slides show what the reduction does at that location.
 
 ---
 
-# Formal Reduction: Two Adjacent Cuts
+# Reduction: Fork the Classical World
 
-[Time runs down the slide. Alice is the left vertical lane and Bob the right.
-At both rounds $t^*$ and $t^*+1$, draw the two messages as crossing diagonal
-arrows. Show a small classical trusted-party state being forked into two copies.]
+[Time runs downward. Alice and Bob are vertical lanes. Draw both crossing
+arrows at rounds $t^*$ and $t^*+1$. Beside the picture, show only the two
+operational steps below.]
 
-For each party $P$, let
-
-$$
-q_P(t)=\Pr[P\text{ accepts when the peer is honest through cut }t,
-                    \text{ then stops}].
-$$
-
-The endpoints move from rejection to honest success:
-
-$$
-q_P(0)=0
-\qquad\longrightarrow\qquad
-q_P(T)\approx p.
-$$
-
-Therefore, for some $t$, either
-
-$$
-\left|q_A(t)-q_B(t)\right|
-\quad\text{or}\quad
-q_B(t+1)-q_A(t)
-$$
-
-is $\Omega(p/T)$.
-
-At that boundary, fork the classical trusted-party state:
+1. Run the honest prefix. The referee holds classical state $c_{t^*}$.
+2. Fork that state with two arrows and form two locally consistent
+   continuations:
 
 $$
 c_{t^*}\longmapsto
 \bigl(c_{t^*}^{A},c_{t^*}^{B}\bigr).
 $$
 
-**No quantum asset is copied at this step.**
+> Only the **classical referee state** is copied---not either quantum asset.
 
 ### Speaker notes
 
 - Run Alice and Bob honestly on the challenge assets up to the selected boundary.
-- Unlike the cartoon, the formal proof fixes a boundary with a large hybrid gap; it does not randomly guess an already-averaged $t^*$ and lose another factor of $T$.
-- The current manuscript permits this boundary to be hardwired non-uniformly; alternatively, one can estimate the cut probabilities when the model provides suitable sampling access.
 - The reduction simulates the trusted party and copies only its classical internal state, creating two locally consistent continuations.
-- If Alice's and Bob's accept probabilities already differ substantially at the same cut, the simultaneous-cut experiment is enough.
-- Otherwise, telescoping from $0$ to $p$ gives an adjacent jump of size at least $p/T$, and closeness at the earlier cut leaves a staggered gap of order $p/T$.
-- A marginal accept/reject gap lower-bounds the probability that the two output flags disagree. Do not show the intersection-bound calculation in the talk.
-- This is what the manuscript's longer BB84 proof quantifies. We are taking unclonability as the final contradiction instead.
+- The intact crossing arrows depict the neighboring-round alternatives used
+  by the proof; they are not an invitation to present a hybrid calculation.
+- The current manuscript may hard-wire the useful boundary non-uniformly; an
+  alternative is to estimate it when the model gives suitable sampling access.
 - The fork is precisely the step that is unavailable when the trusted party holds quantum state.
 
 ---
 
-# Formal Reduction: Let One Message Through
+# Reduction: Let One Message Through
 
 [Reuse the previous two-round diagram. At round $t^*$, leave the Alice-to-Bob
 arrow intact and cross out the Bob-to-Alice arrow. Bob's continuation can now
@@ -426,11 +380,6 @@ $$
 }_{\text{two usable copies from one input}}.
 $$
 
-$$
-\Pr[\text{duplicate Alice's or Bob's asset}]
-    = \Omega\!\left(\frac{p}{T}\right).
-$$
-
 ### Speaker notes
 
 - Alice and Bob are now continued against different copies of the classical trusted-party state.
@@ -440,114 +389,217 @@ $$
 - Both outputs must be versions of Alice's same identified asset, or pass the same instance-specific verifier; merely passing a broad type verifier is not enough.
 - If the flags are reversed, the reduction duplicates Bob's input instead.
 - If the rejecting party gets no asset, fairness has already failed, so either outcome contradicts a required property.
-- The formal proof loses only the $1/T$-scale hybrid factor. Skip the detailed probability and intersection-bound analysis in a 45-minute talk.
+- The full proof has simultaneous-cut and staggered-cut cases. The omitted
+  stopping-probability analysis establishes that one of the $T$ locations
+  works with the claimed $1/T$ scale.
+- Do not show an intersection bound or any $q_P(t)$ notation.
 - Transition: quantum custody prevents this classical fork, which points toward the positive construction.
 
 ---
 
-# Preliminaries I: Quantum Error Correction
+# QEC: Spread One Qubit Across a Block
 
-[One logical qubit enters an encoder and becomes a block of
-$\ell_{\mathrm{code}}$ physical qubits. Below it, draw a supported logical gate
-$g$ becoming coordinate operations $g^{(1)},\ldots,g^{(\ell_{\mathrm{code}})}$.]
+[Draw $\ket\psi\to\mathsf{QEnc}$, a row of $n=\ell_{\mathrm{code}}$
+physical qubits with a few damaged positions, then
+$\mathsf{QDec}\to\ket\psi$.]
 
-Fix a quantum code
+**One entangled block---not $n$ copies of $\ket\psi$.**
 
-$$
-\mathsf{QECC}=(\mathsf{QEnc},\mathsf{QDec}),
-\qquad
-[[\ell_{\mathrm{code}},1,d_{\mathrm{code}}]].
-$$
-
-- One logical qubit is spread over $\ell_{\mathrm{code}}$ physical qubits.
-- The decoder corrects up to
-  $r=\lfloor(d_{\mathrm{code}}-1)/2\rfloor$ physical errors **per code block**.
-- A supported logical Clifford gate is applied coordinate by coordinate:
+For an $[[\ell_{\mathrm{code}},1,d_{\mathrm{code}}]]$ code,
 
 $$
-\left(\bigotimes_{j=1}^{\ell_{\mathrm{code}}}g^{(j)}\right)
-\mathsf{QEnc}^{\otimes a}\ket{\psi}
-=
-\mathsf{QEnc}^{\otimes a}g\ket{\psi}.
+\mathsf{QDec}\!\left(E\,\mathsf{QEnc}(\rho)E^\dagger\right)=\rho
+\quad\text{when}\quad
+\mathsf{wt}(E)\leq
+r=\left\lfloor\frac{d_{\mathrm{code}}-1}{2}\right\rfloor.
 $$
 
-> **Why here?** QEC gives us a damage budget: test each delegated step, stop a
-> detected cheater, and repair any residual low-weight error.
+> Quantum error correction makes **bounded damage repairable**.
 
 ### Speaker notes
 
-- This is the first of two preliminary slides. Keep it operational; do not give a coding-theory lecture.
-- The code used in the manuscript is written abstractly as an $[[\ell_{\mathrm{code}},1,d_{\mathrm{code}}]]$ code with supported transversal Clifford representatives.
-- “Transversal” here means that the $j$th physical coordinates of the code blocks are acted on together. The coordinate gates $g^{(j)}$ need not all be identical.
-- Later, one checked-gate call handles one coordinate $j$; the protocol repeats it for $j\in[\ell_{\mathrm{code}}]$.
-- The construction must identify and replace a malicious evaluator before accumulated damage exceeds the decoder's correction radius.
+- Keep this at the one-idea level: an encoder spreads one logical qubit across
+  an entangled block of physical qubits.
+- This is not cloning. No physical position contains its own copy of the
+  unknown input.
+- Authentication will detect adversarial tampering; QEC repairs bounded
+  residual damage.
+- The construction must identify and replace a malicious evaluator before
+  accumulated damage exceeds the correction radius.
+
+---
+
+# Transversal Operations: Compute Coordinatewise
+
+[Show one encoded block as a row of physical positions. Put one $X$ box on
+each vertical wire, yielding the encoded output below.]
+
+$$
+X_L=X^{\otimes n},
+\qquad
+X^{\otimes n}\mathsf{QEnc}\ket\psi
+=\mathsf{QEnc}X\ket\psi.
+$$
+
+> Apply the same small operation at each coordinate: **local damage stays
+> local**.
+
+### Speaker notes
+
+- $X_L=X^{\otimes n}$ is an intuitive example for the concrete code family
+  under consideration; it is not a claim about every quantum code.
+- More generally, a directly supported logical operation $g$ is represented
+  by coordinate operations $g^{(1)},\ldots,g^{(n)}$, which need not all be
+  identical.
+- Not every operation is directly available this way. The resource-bank slide
+  later explains how the remaining operation is supplied with a magic state.
+- Coordinatewise evaluation is why the construction can test one physical
+  position at a time.
+
+---
+
+# Quantum Authentication: Detect Tampering
+
+[Draw the authentication game from left to right.]
+
+```text
+ k <- KeyGen
+
+ rho --> Auth_k --> sigma --> attacker --> sigma-tilde --> VerDec_k
+                                                              |
+                                                     rho_out  or  Rej
+```
+
+$$
+\text{accept}\quad\Longrightarrow\quad
+\rho_{\mathrm{out}}\approx\rho.
+$$
+
+> An attacker may force rejection, but cannot **change the state and still be
+> accepted**.
+
+### Speaker notes
+
+- This is the integrity game. A full definition also preserves entanglement
+  with an external reference system.
+- The attacker can always destroy the authenticated state and force rejection.
+  Authentication prevents an undetected change.
+- Authentication may also hide the plaintext, but privacy is not the point of
+  this slide.
+- The trap code on the next slide is one concrete implementation blueprint.
+
+---
+
+# The Trap Code: Hide Data Among Tests
+
+[Show three adjacent blocks---encoded data, $0$-traps, and $+$-traps---entering
+a secret permutation and quantum one-time pad.]
+
+$$
+\widetilde\psi=X^aZ^b\,\pi\!\left(
+  \mathsf{QEnc}\ket\psi\otimes\ket0^{\otimes n}
+  \otimes\ket+^{\otimes n}
+\right).
+$$
+
+- $0$-traps catch bit-flip errors.
+- $+$-traps catch phase-flip errors.
+
+> Undo the pad and permutation, test every trap, then decode the data.
+
+**Our protocol:** store QEC $+$ a hidden pad; add fresh tests at every gate.
+
+### Speaker notes
+
+- The standard blueprint appends computational-basis and Hadamard-basis test
+  registers, secretly permutes the three blocks, and applies a quantum
+  one-time pad.
+- More precisely, $0$-traps detect $X/Y$ components and $+$-traps detect $Z/Y$
+  components.
+- The final line is important: the current manuscript does not keep a
+  persistent standard trap-code ciphertext at the TTP. It inserts fresh tests
+  in every checked operation.
 
 ---
 
 # VQFHE: Compute, Then Verify — coverage TODO
 
-[Draw a client on the left and a server on the right. The client runs key
-generation and encryption, sends an encrypted input plus evaluation material
-and a circuit to the server, receives an evaluated ciphertext and log, and
-runs verified decryption.]
+**Verifiable quantum fully homomorphic encryption**
+
+[Draw the client/server game pictorially.]
 
 ```text
  Client                                              Server
 
  (sk, evk) <- KeyGen
+ sigma <- Enc_sk(|x>)
 
-       ( Enc_sk(|psi>), evk, C )  ----------------->  Eval
+       ( sigma, evk, C )  --------------------------> Eval(C)
 
-       ( evaluated ciphertext, log ) <--------------
+       ( evaluated ciphertext, log ) <---------------
 
- VerDec_sk(C, ·)  --->  Rej   or   |y>
+ VerDec_sk(C, ·)  ---------------->  Rej   or   |y>
 ```
 
-For a unitary cartoon, honest correctness says
+**Correctness:** $\ket y=C\ket x$.
 
-$$
-\ket{y}=C\ket{\psi}.
-$$
+**Verifiability:** acceptance implies the correct output.
 
-Verifiability says:
-
-> Even for a malicious server, the output is the declared
-> $\Phi_C(\rho)$ (up to negligible error) or **Rej**. A malicious server may
-> still force rejection.
-
-A standard trap-code ciphertext has the form
-
-$$
-X^aZ^b\,\pi\!\left(
-  \mathsf{QEnc}\ket{\psi}\otimes\ket{0}^{\otimes m}
-  \otimes\ket{+}^{\otimes m}
-\right).
-$$
-
-The secret permutation hides which registers are data, $0$-traps, and
-$+$-traps.
-
-**In our protocol, the TTP stores only
-$Q\mathsf{QEnc}(\rho)Q^\dagger$; fresh traps are supplied per gate.**
-
-> **Why should we care?** Bob wants to run Alice's money-verification circuit
-> without being able to silently alter Alice's protected state.
+> Bob evaluates Alice's money verifier without receiving unprotected money.
+> **Custody and incremental checks** make this asset-preserving.
 
 ### Speaker notes
 
-- Cite Alagic–Dulek–Schaffner–Speelman for VQFHE. This slide uses their natural symmetric-key interface with a secret key and quantum evaluation key; public-key variants can add `pk`.
-- A fully formal return message contains an evaluated ciphertext and an evaluation log, not a plaintext $\ket{\widetilde y}$.
-- Label $\ket y=C\ket\psi$ as **correctness**, not security. For a general channel and reference system, the statement is $\rho_{\mathrm{out}}\approx\Phi_C(\rho)$ on honest evaluation.
-- Generic VQFHE verifies at the end. Rejection by itself does not restore a consumed, unique quantum input.
-- Our asset-preserving adaptation adds three ingredients: the TTP keeps custody of the encrypted QEC block, traps are checked immediately after each delegated coordinate operation, and QEC repairs undetected low-weight damage.
-- The displayed trap-code ciphertext is the conceptual ancestor, not the state stored at rest in our current manuscript. The TTP actually stores only a Pauli-padded QEC block and introduces fresh gate-dependent traps in each checked-gate call.
+- Cite Alagic–Dulek–Schaffner–Speelman `[ADSS17]`. Their natural interface is
+  symmetric-key, with a secret key and quantum evaluation material; public-key
+  variants can add a public key.
+- A formal return contains an evaluated ciphertext and log, not a plaintext
+  $\ket{\widetilde y}$.
+- $\ket y=C\ket x$ is a pure/unitary correctness cartoon. Generally the honest
+  output is $\rho_{\mathrm{out}}\approx\Phi_C(\rho)$, including a reference
+  system.
+- A malicious server may always force rejection. Generic VQFHE alone does not
+  restore a consumed unique input.
+- The extra asset-preserving ingredients are TTP custody, an immediate check
+  after each delegated step, and QEC repair.
+
+---
+
+# Homomorphic Evaluation: Act Without Finding the Data
+
+[Show a secretly shuffled triple containing hidden data, a $0$-test, and a
+$+$-test. Apply $G^{\otimes3}$ to the whole triple; keep the transformed data
+and undo/test the two traps.]
+
+$$
+\pi_E(\widetilde\rho_j,T_0,T_+)
+\xrightarrow{\quad G^{\otimes3}\quad}
+\pi_E(G\widetilde\rho_j,GT_0,GT_+).
+$$
+
+> The evaluator cannot locate the data, so it must treat the data and both
+> tests **in exactly the same way**.
+
+### Speaker notes
+
+- This is the fresh-trap variant used by the manuscript, not a claim that the
+  at-rest ciphertext is a standard trap-code ciphertext.
+- Pads and rerandomization are suppressed in the visible formula. The actual
+  evaluator also applies a fresh Pauli rerandomizer.
+- $G$ is a directly supported physical coordinate operation. The TTP prepares
+  the corresponding expected output tests in advance.
+- After unshuffling, keep the transformed data. Pair the returned tests with
+  fresh known tests so a dishonest checker can also be detected.
+- The next slide sequence expands this operation into the interactive
+  construction.
 
 ---
 
 # Construction I: Input Encoding
 
-[Use two vertical lanes, Alice and the TTP. Repeat the following for every
-logical input qubit $i$.]
+[Use two vertical lanes, Alice and the TTP. Put a right-side, mirrored brace
+around the full exchange so that it faces left, labelled “repeat for every
+logical input qubit $i$”.]
 
 1. The TTP prepares an EPR pair $(L_i,D_i)$, QEC-encodes and Pauli-pads $D_i$,
    and keeps that encoded half.
@@ -585,7 +637,8 @@ $$
 
 [Three vertical lanes: Alice is the checker, the TTP is in the middle, and Bob
 is the evaluator. Time runs downward. Put one brace around all four messages,
-labelled $j=1,\ldots,\ell_{\mathrm{code}}$.]
+labelled $j=1,\ldots,\ell_{\mathrm{code}}$. The right-side brace must be
+mirrored so that it faces left toward the arrows.]
 
 For one physical coordinate $j$:
 
@@ -623,44 +676,74 @@ traps, then keeps the transformed data and updates its Pauli key.
 
 # Construction III: Circuit Evaluation
 
-[Reuse the Alice–TTP–Bob lanes. For each Clifford instruction $g_t$, draw eight
-arrows. Put a dashed box around the first four and another around the second
-four. Put an outer brace labelled $t=1,\ldots,T$.]
+[Reuse the Alice–TTP–Bob lanes. Draw eight **unlabelled** arrows: a dashed box
+around the first four labelled $\pi_{\mathsf{gate}}(g_t)$, and another dashed
+box around the other four labelled $\pi_{\mathsf{gate}}(I)$. Do not add
+micro-labels such as “hidden triple”, “apply”, “trap pairs”, or “outcomes”. Put
+a mirrored, left-facing brace on the right labelled $t=1,\ldots,T$.]
 
-For every Clifford instruction $g_t$:
+The first four-arrow region is labelled only
+$\pi_{\mathsf{gate}}(g_t)$; the second is labelled only
+$\pi_{\mathsf{gate}}(I)$. Each region is the primitive from the previous slide
+and internally repeats over $j\in[\ell_{\mathrm{code}}]$.
 
-$$
-\boxed{
-\pi_{\mathsf{gate}}(g_t):
-\quad \text{Bob evaluates; Alice checks}
-}
-$$
-
-followed by
-
-$$
-\boxed{
-\pi_{\mathsf{gate}}(I):
-\quad \text{Alice rerandomizes; Bob checks}
-}.
-$$
-
-Each box is the four-message primitive from the previous slide and internally
-repeats over $j\in[\ell_{\mathrm{code}}]$.
-
-The identity pass gives both parties an evaluator role and refreshes the hidden
-state before the next instruction.
-
-> For each **Clifford instruction**: delegate, check, replace if needed, then
-> continue. Measurements use a separate trap-checked primitive.
+> For each **circuit step**: one party evaluates and the other checks; then
+> reverse roles and refresh.
 
 ### Speaker notes
 
 - For Alice's asset, Alice is the sender and Bob is the verifier. In the actual-gate call Bob evaluates and Alice checks. In the identity call the roles reverse.
-- Show all eight arrows even if their labels are abbreviated; the repeated geometry is the point.
-- A circuit is not literally eight messages total: this pair of gate calls is repeated for every Clifford instruction, and every call repeats over all physical code coordinates.
-- Measurement instructions use a separate trap-checked two-message primitive. The active draft's treatment of all non-Clifford/measurement cases is not yet equally polished, so keep this slide explicitly about a Clifford instruction.
+- Show all eight arrows with no arrow-level labels; the repeated geometry and
+  the two $\pi_{\mathsf{gate}}$ labels are enough.
+- A circuit is not literally eight messages total: this pair of calls repeats
+  for every instruction, and every call repeats over all physical code
+  coordinates.
+- Technically, directly supported gates use this primitive. Measurements use a
+  separate trap-checked primitive, and the remaining gate is compiled using a
+  magic state. Keep those details oral or on the resource-bank slide.
 - This is a candidate construction and its load-bearing coherent-attack argument is still being finalized. Do not present the security statement as a finished theorem.
+
+---
+
+# Preprocessing: The Quantum Resource Bank
+
+[Collect the offline resources into three columns, then show the classical
+ledger and the one-use magic-state explanation below.]
+
+1. **Input custody:** encoded EPR halves.
+2. **Workspace:** padded encoded $\ket0$ and $\ket T$ blocks, where
+   $\ket T:=T\ket+$.
+3. **Checks:** measurement traps and fresh output traps for every instruction
+   slot, physical coordinate, and candidate operation, including the identity
+   pass.
+
+The **classical ledger** stores Pauli keys, secret permutations, and expected
+trap outcomes.
+
+> **One-use quantum fuel:** consuming one $\ket T=T\ket+$ state in a checked
+> gadget implements a $T$ gate.
+
+The actual adaptive circuit selects the needed candidates; unused resources
+are discarded.
+
+> After preprocessing, the TTP's quantum work is **storage, communication, and
+> routing/SWAP**. Resource selection, trap checks, and Pauli-key updates are
+> classical.
+
+### Speaker notes
+
+- Spend one sentence on the magic state: $\ket T=T\ket+$ is a special
+  pre-prepared state that supplies the one operation not available through the
+  simple coordinatewise interface; consuming it reduces that operation to
+  simpler gates, a measurement, and a classical correction.
+- The circuit need not be fixed at preprocessing time. Public level bounds let
+  the TTP prepare a bank containing a candidate for every allowed operation at
+  each slot and discard unselected candidates.
+- The universal candidate bank is polynomially larger. If the circuit is
+  already known, prepare only the candidates it needs.
+- This optimization assumes trusted preparation and intact delivery of the
+  bank. Outsourcing preparation needs an additional authentication or
+  verifiable-delivery mechanism.
 
 ---
 
@@ -689,9 +772,8 @@ Then the TTP makes one release decision:
        SWAP                               RETURN TO OWNERS
 ```
 
-> Precompute the encoded EPR halves and gate-dependent traps. Online, the TTP
-> stores and routes quantum registers, implements hidden permutations with
-> SWAPs, and performs classical checks and key updates.
+> **Delay release:** neither party receives the other's unique asset until
+> both checks are complete.
 
 ### Speaker notes
 
@@ -699,5 +781,8 @@ Then the TTP makes one release decision:
 - On success the outputs cross. On failure each updated asset returns to its original owner.
 - Keep the verifier labels semantically clear: Bob runs the public circuit that validates Alice's asset; Alice runs the one that validates Bob's asset. The active rewrite has some subscript naming still being cleaned up.
 - The fairness lever is delayed release: neither party receives the other's unique asset until both checks have completed.
-- The resource headline is the possibility result's point. Quantum states used online can be prepared in advance; the TTP's online quantum behavior is intended to reduce to storage, routing, and SWAP/permutation operations.
+- The preceding resource-bank slide now carries the preprocessing headline;
+  keep this slide focused on the single release decision.
+- The TTP's online quantum behavior is intended to reduce to storage, routing,
+  and SWAP/permutation operations.
 - Say “construction idea” or “candidate construction” while the security proof and a few circuit-gadget details remain in progress.
