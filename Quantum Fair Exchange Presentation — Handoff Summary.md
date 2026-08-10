@@ -4,13 +4,18 @@
 
 I am preparing a **45-minute theory-group presentation** on our ongoing project, **Quantum Fair Exchange**. The audience includes Aravind and his students, plus researchers from other groups, so not everyone should be assumed to know cryptography.
 
-We are designing the content first in Markdown. Later I plan to use Codex to turn it into LaTeX/Beamer.
+We are designing the content in Markdown and maintaining a matching
+LaTeX/Beamer draft.
 
 Current checkpoint:
 
 `quantum-fair-exchange-slides-v9.md`
 
-The presentation is unfinished. We have designed the motivation through the **Main Goals** slide. Next we should work on the **impossibility result**.
+The presentation is unfinished. We now have the motivation, a four-slide
+**impossibility result** that avoids the BB84 basis-guessing detour, two short
+preliminary slides, and a four-slide **candidate construction**. The next major
+content task is the n-party extension and conclusion; the VQFHE coverage is
+deliberately marked for later revision.
 
 ---
 
@@ -222,7 +227,7 @@ Current structure:
 
 - **Multiparty quantum computation with identifiable abort**
   - identify the cheating party and abort
-  - `\cite{mpqc-swia, mpqc-pv-swia}`
+  - `\cite{alon-et-al-identifiable-abort, chung-et-al-pvia}`
 
 - **Verifiable quantum fully homomorphic encryption (VQFHE)**
   - a key technical building block
@@ -275,6 +280,114 @@ Important: this is an ongoing project, so retain language like **“we aim to sh
 
 ---
 
+# 11–14. Impossibility Without the BB84 Detour
+
+The talk uses a direct reduction from fair exchange to an operational cloning
+game. It assumes the exchanged assets are **selectively uncloneable**: given
+one valid instance of each input, an efficient algorithm cannot choose one
+input and produce two usable versions of that same identified asset, except
+with negligible probability.
+
+The quantitative statement must be phrased carefully:
+
+> Honest exchange success $p$ in $T$ rounds gives a cloning attack with success
+> $\Omega(p/T)$.
+
+Thus, when $p\approx1$ and $T$ is polynomial, the cloner succeeds with
+non-negligible probability. The $1/T$ quantity belongs to the cloning attack,
+not directly to the protocol's honest success probability.
+
+The four slides are:
+
+1. **Impossibility with a Classical Trusted Party**
+   - state the direct reduction and the $\Omega(p/T)$ cloning probability;
+   - keep the theorem informal while the precise model/error parameters remain ongoing.
+
+2. **Intuition: Somewhere, the Exchange Must Happen**
+   - use the simple cartoon of guessing a decisive round $\hat t$;
+   - deliver Alice's message and drop Bob's;
+   - either Alice is left with nothing, violating fairness, or returning her
+     asset gives Alice and Bob two versions of the same input.
+
+3. **Formal Reduction: Two Adjacent Cuts**
+   - replace the sharp-round cartoon by accept probabilities at adjacent cuts;
+   - a telescoping/hybrid argument supplies a gap of order $p/T$;
+   - fork only the classical trusted-party state.
+
+4. **Formal Reduction: Let One Message Through**
+   - reuse the two-round message diagram and cross out one direction;
+   - show one continuation accepting Alice's asset while the other rejects and
+     returns Alice's asset;
+   - conclude that the reduction produced two usable copies.
+
+Do not put the two-case probability analysis or intersection bound on slides.
+Mention in speaker notes that ordinary textbook no-cloning is not by itself a
+quantitative security game; the direct version assumes operational
+uncloneability of the assets. The BB84 game in the manuscript is one concrete
+way to instantiate that premise.
+
+---
+
+# 15–20. Preliminaries and Candidate Construction
+
+The positive direction currently uses six slides.
+
+1. **Preliminaries I: Quantum Error Correction**
+   - one logical qubit becomes an
+     $[[\ell_{\mathrm{code}},1,d_{\mathrm{code}}]]$ block;
+   - supported Clifford gates act coordinate by coordinate;
+   - QEC supplies the damage budget needed to stop and replace a cheater.
+
+2. **VQFHE: Compute, Then Verify**
+   - deliberately marked `COVERAGE TODO`;
+   - shows KeyGen / Enc / Eval / VerDec pictorially;
+   - distinguishes honest correctness from verifiability;
+   - displays the standard hidden data / $0$-trap / $+$-trap ciphertext pattern;
+   - explains why final VQFHE rejection alone cannot recover a unique asset.
+
+3. **Construction I: Input Encoding**
+   - the TTP prepares encoded, Pauli-padded EPR halves;
+   - Alice returns only a classical Bell-measurement label;
+   - the TTP updates its Pauli key and now holds the encoded input.
+
+4. **Construction II: Gate Evaluation**
+   - four-message picture
+     `TTP → Bob → TTP → Alice → TTP`;
+   - Bob receives one hidden data register plus fresh $0/+$ traps;
+   - Alice checks returned traps against fresh gate-output traps;
+   - repeat over $j\in[\ell_{\mathrm{code}}]$.
+
+5. **Construction III: Circuit Evaluation**
+   - for each Clifford instruction, call the checked-gate primitive twice;
+   - first Bob evaluates $g_t$ and Alice checks;
+   - then Alice evaluates $I$ and Bob checks;
+   - the two dashed four-arrow boxes give the intended eight-message visual.
+
+6. **Construction IV: Full Exchange**
+   - encode both inputs;
+   - run one one-sided verified computation on each asset;
+   - if both accept, cross the outputs; otherwise return each input to its
+     original owner;
+   - state the resource boundary: preprocessing plus online quantum
+     storage/routing/SWAP and classical checks/key updates.
+
+Important manuscript-alignment point:
+
+> The TTP's at-rest state is a **Pauli-padded QEC codeword**, not a persistent
+> trap-code ciphertext. Fresh, gate-dependent traps are introduced in every
+> checked-gate call.
+
+Likewise, the active construction repeats over
+$j\in[\ell_{\mathrm{code}}]$, not $j\in[3\lambda]$. Each call contains three
+registers—data plus two traps—so an encoded gate has $3\ell_{\mathrm{code}}$
+evaluator registers in total.
+
+The visible language should remain **candidate construction** / **construction
+idea**. The one-sided coherent-attack proof and some non-Clifford/measurement
+details are still unfinished in the manuscript.
+
+---
+
 # Overall Story
 
 The intended narrative is:
@@ -303,7 +416,21 @@ The intended narrative is:
 
 → **Main Goals**
 
-→ next: **Impossibility with a classical TTP**
+→ **Impossibility with a classical TTP**
+
+→ a $T$-round exchanger gives an $\Omega(1/T)$-success cloner
+
+→ QEC makes bounded damage repairable
+
+→ VQFHE supplies the compute-then-verify blueprint
+
+→ teleport each asset into **quantum custody**
+
+→ trap-check one coordinate, then compile a verification circuit
+
+→ verify both assets before releasing either one
+
+→ online TTP uses quantum storage/routing/SWAP, not general computation
 
 The current judgment is that this story works well and does not need major restructuring.
 
@@ -325,16 +452,18 @@ Roughly:
 - Literature survey: ~1–1.5 min
 - Main Goals: ~1.5–2 min
 
-For a 45-minute theory talk, that leaves about 30 minutes.
+The four-slide impossibility section should take about **6–8 minutes**. The six
+new preliminary/construction slides likely need **12–15 minutes**, depending on
+how much VQFHE detail survives.
 
 Tentative remaining allocation:
 
-- Impossibility: **8–10 min**
-- Construction intuition: **~5 min**
-- VQFHE review: **~5 min**
+- Impossibility: **6–8 min**
+- QEC + VQFHE review: **~4–5 min**
 - Protocol construction/security: **8–10 min**
 - n-party extension + conclusion: **2–3 min**
 
 Next task:
 
-> **Design the Impossibility section, starting with intuition before technical details.**
+> **Design the n-party extension and conclusion, then rehearse timing and decide
+> how much of the VQFHE placeholder belongs in the 45-minute version.**
