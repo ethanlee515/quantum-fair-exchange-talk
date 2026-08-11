@@ -21,7 +21,7 @@ Sri AravindaKrishnan Thyagarajan
 
 **Ongoing work**
 
-# Fair Exchange: Who Goes First?
+# Fair Exchange
 
 [Large visual: Alice on the left, Bob on the right, with a plain two-way arrow
 between them. Put `$100` and `Digital ticket` directly below the corresponding
@@ -32,8 +32,6 @@ party rather than on the arrow.]
         $100           <-->         Digital ticket
 ```
 
-## Who goes first?
-
 - If Alice pays first, Bob can take the money and disappear.
 - If Bob sends the ticket first, Alice can take the ticket and disappear.
 
@@ -42,7 +40,7 @@ party rather than on the arrow.]
 - Start from the intuitive problem, before introducing cryptographic definitions.
 - “Digital ticket” can mean a concert ticket, a game activation/serial code, or a gift-card code.
 - Since this is a cryptography talk, Alice and Bob do not necessarily trust each other; either may cheat.
-- Pause at “Who goes first?” before explaining the two cheating cases.
+- Use the two cheating cases to pose the problem; the visual already makes the dilemma clear.
 - This slide should be mostly visual and light on text.
 
 ---
@@ -244,30 +242,28 @@ multiparty quantum computation, then VQFHE, and finally the conclusion box.]
 
 ---
 
-# Main Goals
+# Contributions
 
 [Reveal this slide in three overlays. Overlay 1 stops after “We aim to show two
 complementary results:”. Overlay 2 adds the classical-TTP impossibility result;
 overlay 3 adds the limited-quantum-capabilities result.]
 
-We define **quantum fair exchange** for quantum states that cannot be copied.
+We define **quantum fair exchange**.
 
 We aim to show two complementary results:
 
-1. **Impossibility with a classical trusted third party**
-   - Quantum fair exchange is impossible in general, even with a classical trusted third party.
+1. **Classical TTP**
+   - Impossible in general.
 
-2. **Possibility with limited quantum capabilities**
-   - A trusted party may use **quantum states prepared before the exchange**,
-     plus storage.
-   - During the exchange, its only quantum operation is a **SWAP gate** to
-     move stored states.
+2. **Quantum TTP**
+   - Possible with **quantum storage** and **pre-processing**.
 
 ### Speaker notes
 
 - These are goals / ongoing results, so keep the language consistent with the abstract: “we aim to show,” rather than presenting everything as a finished theorem.
 - Emphasize the complementarity of the two main results: a fully classical trusted party is insufficient, but surprisingly limited quantum capabilities suffice.
 - The important resource question is not simply “trusted party or no trusted party,” but what quantum capabilities the trusted party needs.
+- Save the SWAP-gate characterization for the final resource summary.
 - Do not explain the technical reason yet. The next section can start with the impossibility result and its intuition.
 - Do not promise the $n$-party extension on the main path. If it comes up,
   treat it as future work or a backup-slide topic.
@@ -370,6 +366,8 @@ out, and labelled $\ket{\$_B}$ withheld.]
 [Reveal this slide in three overlays: correctness, then input-state preservation,
 then the composable-security work item.]
 
+We have a protocol that satisfies:
+
 | **Property-based security** | **Still in progress** |
 |---|---|
 | **Correctness:** If both parties are honest, they accept and receive each other's states. | Composable security. |
@@ -450,9 +448,8 @@ $\mathsf{QDec}\to\ket\psi$.]
 **One entangled block---not $n$ copies of $\ket\psi$.**
 
 $$
-\mathsf{QDec}\!\left(
-  \textcolor{red}{\mathcal A}\bigl(\mathsf{QEnc}(\ket\psi)\bigr)
-\right)=\ket\psi
+\bigl(\mathsf{QDec}\circ\textcolor{red}{\mathcal A}\circ
+\mathsf{QEnc}\bigr)\ket\psi=\ket\psi
 \quad\text{if $\mathcal A$ damages at most $\lambda$ positions.}
 $$
 
@@ -470,6 +467,8 @@ $$
   constant multiple of the security parameter.
 - $\mathcal A$ is the attack/noise channel; the equation applies when its
   effect is supported on at most $\lambda$ physical positions.
+- Strictly, channels act on density operators; the ket equation is the talk's
+  pure-state shorthand.
 - Authentication will detect adversarial tampering; QEC repairs bounded
   residual damage.
 
@@ -514,29 +513,38 @@ $$
 either party's local operations. Keep the two message arrows short enough not
 to collide with those operations.]
 
+$$
+\mathsf{QAS}=(\mathsf{KeyGen},\mathsf{Enc},\mathsf{VerDec})
+$$
+
 ```text
  Client                                                Server
 
  k <- KeyGen
- |psi-tilde> <- Auth_k(|psi>)
+ |psi-tilde> <- Enc_k(|psi>)
 
        protected state |psi-tilde> -------------------->
-                                             untrusted A
+                                      untrusted server A
        returned state |psi-tilde'> <-------------------
 
  VerDec_k(|psi-tilde'>)  ↦  |psi_out> or Rej
 ```
 
 $$
-\text{accept}\quad\Longrightarrow\quad
+\textbf{Security:}\quad\mathsf{Accept}\quad\Longrightarrow\quad
 \ket{\psi_{\mathrm{out}}}\approx\ket\psi.
 $$
 
 ### Speaker notes
 
+- This is the detection ingredient behind the checks in
+  $\mathsf{Ver\text{-}Eval}$: QEC repairs bounded damage, while authentication
+  detects tampering.
 - This is the integrity game. The visible slide uses pure states throughout
   for the audience; a full definition also preserves entanglement with an
   external reference system.
+- Here $\mathsf{Enc}$ means authenticated encoding, not encryption for secrecy
+  alone.
 - The attacker can always destroy the authenticated state and force
   rejection. Authentication prevents an undetected change.
 - The authenticating key also commonly hides the plaintext, but privacy is not
@@ -546,8 +554,6 @@ $$
 ---
 
 # Background: The Trap Code
-
-Let $n$ be the number of physical qubits in one encoded block.
 
 **Key generation**
 
@@ -571,21 +577,25 @@ $$
 1. Undo $X^xZ^z$, then $\pi$.
 2. Measure and check the $\ket{0^n}$ and $\ket{+^n}$ traps.
 3. If any test fails: $\mathsf{Rej}$.
-4. Otherwise return $\mathsf{QDec}(\text{data})$.
+4. Otherwise: return $\mathsf{QDec}(\text{data})$.
 
 ### Speaker notes
 
-- $S_{3n}$ is the symmetric group and $X^xZ^z$ is a uniformly random
-  $3n$-qubit Pauli pad. For several plaintext qubits, reuse $\pi$ and sample an
-  independent Pauli pad per block.
+- This unpacks the trap-code picture behind the $\mathsf{TEnc}$ shorthand, but
+  remember that our TTP does not keep this full ciphertext at rest.
+- This is the standard one-block trap-code authentication construction.
+  $S_{3n}$ is the symmetric group and $X^xZ^z$ is a uniformly random
+  $3n$-qubit Pauli pad.
+- For several plaintext qubits, reuse the same permutation $\pi$ and sample an
+  independent Pauli pad for each block.
+- Undo the pad and permutation; measure $0$-traps in the computational basis
+  and $+$-traps in the Hadamard basis; decode only if all tests pass.
 - More precisely, $0$-traps detect $X/Y$ components and $+$-traps detect $Z/Y$
   components.
-- Use $n$, rather than $\lambda$, because the physical block length may be
-  polynomially larger than the number of errors it corrects.
-- The current manuscript does not keep a persistent standard trap-code
-  ciphertext at the TTP. It inserts fresh tests in every checked operation;
-  keep this distinction in the notes rather than forcing it onto this
-  introductory slide.
+- Here $n$ is the QEC blocklength introduced earlier; it may be polynomially
+  larger than the number of errors the code corrects.
+- This manuscript does not keep a persistent standard trap-code ciphertext at
+  the TTP. It inserts fresh tests in every checked operation.
 
 ---
 
@@ -593,21 +603,25 @@ $$
 
 [Use plain client/server lanes and no boxes around local operations.]
 
+$$
+\mathsf{VQFHE}=(\mathsf{KeyGen},\mathsf{Enc},\mathsf{Eval},\mathsf{VerDec})
+$$
+
 ```text
  Client                                                Server
 
  (pk,sk) <- KeyGen
  |phi-tilde> <- Enc_pk(|phi>)
 
-          (|phi-tilde>,C) ---------------------------->
+       (pk,|phi-tilde>,C) ---------------------------->
                      |psi-tilde> <- Eval_pk(C,|phi-tilde>)
           |psi-tilde> <--------------------------------
 
- VerDec_sk(|psi-tilde>)  ↦  |psi> or Rej
+ VerDec_sk(C,|psi-tilde>)  ↦  |psi> or Rej
 ```
 
 $$
-\mathsf{Accept}\quad\Longrightarrow\quad
+\textbf{Security:}\quad\mathsf{Accept}\quad\Longrightarrow\quad
 \ket\psi\approx C\ket\phi.
 $$
 
@@ -615,11 +629,13 @@ $$
 
 - This is the abstraction behind the $\mathsf{Ver\text{-}Eval}$ roadmap label:
   compute on a protected state and accept only a certified result.
-- This is a deliberately simplified public-key interface, separated from the
-  concrete CNOT mechanism on the next slide.
-- In the full VQFHE syntax, an evaluation key and a computation log may appear
-  separately. Here the evaluation key is folded into $\mathsf{pk}$, and the
-  log into the returned $\ket{\widetilde\psi}$.
+- This is a simplified public-key interface. Read
+  $\mathsf{pk}=(\mathsf{pk}_{\mathrm{enc}},\rho_{\mathrm{evk}})$: encryption
+  uses the classical $\mathsf{pk}_{\mathrm{enc}}$, then the untouched quantum
+  $\rho_{\mathrm{evk}}$ is sent once to the server. It is not freely copyable.
+- The full syntax may return a separate computation log; here it is folded
+  into $\ket{\widetilde\psi}$, while $C$ remains an input to verified
+  decryption.
 - The visible pure-state equation is the unitary cartoon. For a general
   circuit, write $\rho_{\mathrm{out}}\approx\Phi_C(\rho)$ and preserve
   entanglement with an external reference.
@@ -632,8 +648,7 @@ $$
 
 # Background: Homomorphic CNOT
 
-Both ciphertexts use the **same hidden permutation** $\pi$ and
-**independent one-time pads**.
+Both ciphertexts use the **same hidden permutation** $\pi$.
 
 [Show the two permuted $3n$-position ciphertext blocks one above the other.
 Use the same two-color hidden pattern in both blocks only as an explanatory
@@ -666,7 +681,7 @@ $$
 
 [Reveal this slide in six overlays. Overlay 1 shows the two encryption
 equations and the common-$\pi$/independent-pad reminder. Overlays 2--5 reveal,
-in order, the new-pad-keys, same-permutation, logical-CNOT, and tests-unchanged
+in order, the new-pad-keys, same-permutation, logical-CNOT, and traps-unchanged
 rows. Overlay 6 reveals the `[ADSS17]` universality remark.]
 
 $$
@@ -689,14 +704,14 @@ Same $\pi$; independently random $Q_1,Q_2$.
 | **new pad keys** | $\mathsf{CNOT}^{\otimes3n}(Q_1\otimes Q_2)=(Q'_1\otimes Q'_2)\mathsf{CNOT}^{\otimes3n}$ |
 | **same permutation** | $\mathsf{CNOT}^{\otimes3n}(\pi\otimes\pi)=(\pi\otimes\pi)\mathsf{CNOT}^{\otimes3n}$ |
 | **logical CNOT** | $\mathsf{CNOT}^{\otimes n}\mathsf{QEnc}^{\otimes2}=\mathsf{QEnc}^{\otimes2}\mathsf{CNOT}$ |
-| **tests unchanged** | $\mathsf{CNOT}\ket{00}=\ket{00}$, $\mathsf{CNOT}\ket{++}=\ket{++}$ |
+| **traps unchanged** | $\mathsf{CNOT}\ket{00}=\ket{00}$, $\mathsf{CNOT}\ket{++}=\ket{++}$ |
 
 Universality gets tricky `[ADSS17]`.
 
 ### Speaker notes
 
 - This slide is the analysis of the preceding construction. Read it from top
-  to bottom in the same order as $Q\pi(\cdot)$: pad, permutation, data, tests.
+  to bottom in the same order as $Q\pi(\cdot)$: pad, permutation, data, traps.
 - $Q'_1\otimes Q'_2$ is defined by conjugating the original two-block Pauli
   through $\mathsf{CNOT}^{\otimes3n}$, so the first identity is exact up to
   the irrelevant Pauli phase.
@@ -710,13 +725,15 @@ Universality gets tricky `[ADSS17]`.
 
 ---
 
-# Construction I: Teleport to the TTP
+# Construction I: Input Encoding
 
-[Use two plain, unboxed vertical lanes, Alice and the quantum TTP.]
+[Use two plain, unboxed vertical lanes, Alice and the quantum TTP. Extend both
+message arrows all the way between the two party columns, keeping their labels
+at the same relative positions on the arrows.]
 
 1. The TTP prepares
    $(I\otimes\mathsf{TEnc})\ket{\mathrm{EPR}}$.
-2. TTP $\rightarrow$ Alice: one half of the entangled pair.
+2. TTP $\rightarrow$ Alice: the first (unencrypted) half of the entangled pair.
 3. Alice teleports $\ket{\$_A}$ into that half and returns the classical
    teleportation outcome.
 4. The TTP now holds $\mathsf{TEnc}(\ket{\$_A})$.
@@ -740,13 +757,10 @@ Universality gets tricky `[ADSS17]`.
 
 ---
 
-# Construction II: One Checked Gate
-
-For one physical position, define
+# Construction II: Homomorphic Gate Evaluation
 
 $$
-G:=g^{(j)},\qquad
-\ket W:=\pi_E\bigl(\ket{D_j},X^e\ket{0^w},Z^f\ket{+^w}\bigr).
+\ket W:=Q\,\pi_E\bigl(\ket{D_j}\otimes\ket{0^w}\otimes\ket{+^w}\bigr),
 $$
 
 [There is no visible “without re-encryption” line. Use the same fixed-coordinate
@@ -760,63 +774,47 @@ check equation.]
 1. TTP $\rightarrow$ Bob: $\ket W$.
 2. Bob $\rightarrow$ TTP: $G^{\otimes3}\ket W$.
 3. TTP $\rightarrow$ Alice:
-
-   $$
-   \begin{aligned}
-   \ket{T_0}&=\pi_0(G X^e\ket{0^w},\,G X^u\ket{0^w}),\\
-   \ket{T_+}&=\pi_+(G Z^f\ket{+^w},\,G Z^v\ket{+^w}).
-   \end{aligned}
-   $$
-
+   $\ket{T_0}=\pi_0(GQ_0\ket{0^w},GX^u\ket{0^w})$ and
+   $\ket{T_+}=\pi_+(GQ_+\ket{+^w},GZ^v\ket{+^w})$.
 4. Alice $\rightarrow$ TTP:
-
-   $$
-   \begin{aligned}
-   o_0&\leftarrow\mathsf{Meas}_Z((G^\dagger)^{\otimes2}\ket{T_0}),\\
-   o_+&\leftarrow\mathsf{Meas}_X((G^\dagger)^{\otimes2}\ket{T_+}).
-   \end{aligned}
-   $$
+   $o_0\leftarrow\mathsf{Meas}_Z((G^\dagger)^{\otimes2}\ket{T_0})$ and
+   $o_+\leftarrow\mathsf{Meas}_X((G^\dagger)^{\otimes2}\ket{T_+})$.
 
 At the TTP:
 
 $$
-\text{check the trap outcomes }o_0,o_+;
-\qquad
-\text{keep }G\ket{D_j}.
+\text{check }(o_0,o_+);\qquad
+\text{keep }GQ_D\ket{D_j}.
 $$
 
 ### Speaker notes
 
-- This is the warm-up version with no fresh re-encryption. It isolates the
-  four-message check; the next frame adds the missing security layer without
-  moving anything.
-- This is one complete per-coordinate interaction. The TTP checks Alice's
-  reported outcomes before advancing to $j+1$; Bob never touches all
-  coordinates before a check occurs.
-- The visible pure-state notation is a talk-level purification shorthand. The
-  data column $D_j$ may be entangled with the other columns and an external
-  reference.
-- Here $u,v\in\{0,1\}^w$ and the two fresh pair permutations satisfy
-  $\pi_0,\pi_+\in S_2$; also $e,f\in\{0,1\}^w$.
-- Alice receives each returned test mixed with a fresh known output test.
-- In an honest execution, undoing $G$ makes the old and fresh traps yield
-  exactly $(e,u)$ and $(f,v)$. Under attack, $G\ket{D_j}$ denotes the honest
-  value of the first register retained after the TTP undoes $\pi_E$.
-- If the current data pad is $Q$, the corresponding warm-up update is
-  $Q_{\mathrm{new}}=GQG^\dagger$.
-- This warm-up alone is not the final secure construction: without fresh
-  Pauli re-encryption, correlations can persist between calls.
+- Warm-up: no fresh re-encryption. This is one complete per-coordinate
+  interaction; the TTP checks before advancing to $j+1$.
+- $G$ is the current physical gate. The pure-state notation is shorthand:
+  $D_j$ may be entangled with other columns and a reference.
+- $Q$ is the aggregate pad on the permuted triple:
+  $\pi_E^{-1}Q\pi_E=Q_D\otimes Q_0\otimes Q_+$. Thus the data register is
+  already encrypted by $Q_D$.
+- Up to phase, write $Q_0\ket{0^w}=X^e\ket{0^w}$ and
+  $Q_+\ket{+^w}=Z^f\ket{+^w}$; these bit strings are needed only for the exact
+  checks in the notes.
+- Fresh $u,v\in\{0,1\}^w$ and $\pi_0,\pi_+\in S_2$ hide the known-output
+  comparison traps. Alice applies $G^\dagger$, measures the $0$-pair in $Z$
+  and the $+$-pair in $X$, and returns $(o_0,o_+)$.
+- Honest expected strings are $(e,u)$ and $(f,v)$. The TTP retains
+  $GQ_D\ket{D_j}$, which represents $G\ket{D_j}$ under
+  $Q_{D,\mathrm{new}}=GQ_DG^\dagger$.
+- This warm-up is not the final construction: without fresh Pauli
+  re-encryption, correlations can persist between calls.
 
 ---
 
 # Construction II: Add Re-encryption
 
-For the same physical position, add
-
 $$
 \begin{gathered}
-G:=g^{(j)},\qquad
-\ket W:=\pi_E\bigl(\ket{D_j},X^e\ket{0^w},Z^f\ket{+^w}\bigr),\\
+\ket W:=Q\,\pi_E\bigl(\ket{D_j}\otimes\ket{0^w}\otimes\ket{+^w}\bigr),\\
 R\leftarrow\text{fresh Pauli}.
 \end{gathered}
 $$
@@ -830,54 +828,37 @@ the warm-up preamble, and the TTP lane again ends before the local check.]
 1. TTP $\rightarrow$ Bob: $\bigl(\ket W,R\bigr)$.
 2. Bob $\rightarrow$ TTP: $R\,G^{\otimes3}\ket W$.
 3. TTP $\rightarrow$ Alice:
-
-   $$
-   \begin{aligned}
-   \ket{T_0}&=\pi_0(R_0G X^e\ket{0^w},\,G X^u\ket{0^w}),\\
-   \ket{T_+}&=\pi_+(R_+G Z^f\ket{+^w},\,G Z^v\ket{+^w}).
-   \end{aligned}
-   $$
-
+   $\ket{T_0}=\pi_0(R_0GQ_0\ket{0^w},GX^u\ket{0^w})$ and
+   $\ket{T_+}=\pi_+(R_+GQ_+\ket{+^w},GZ^v\ket{+^w})$.
 4. Alice $\rightarrow$ TTP:
-
-   $$
-   \begin{aligned}
-   o_0&\leftarrow\mathsf{Meas}_Z((G^\dagger)^{\otimes2}\ket{T_0}),\\
-   o_+&\leftarrow\mathsf{Meas}_X((G^\dagger)^{\otimes2}\ket{T_+}).
-   \end{aligned}
-   $$
+   $o_0\leftarrow\mathsf{Meas}_Z((G^\dagger)^{\otimes2}\ket{T_0})$ and
+   $o_+\leftarrow\mathsf{Meas}_X((G^\dagger)^{\otimes2}\ket{T_+})$.
 
 At the TTP:
 
 $$
-\text{check the trap outcomes }o_0,o_+;
-\qquad
-\text{keep }R_DG\ket{D_j}.
+\text{check }(o_0,o_+);\qquad
+\text{keep }R_DGQ_D\ket{D_j}.
 $$
 
 ### Speaker notes
 
-- This is the same interaction as the preceding frame. The coral symbols are
-  the only additions: a fresh Pauli re-encryption and its induced corrections.
-- $R$ is a uniformly random Pauli on the permuted three-register block, sent
-  to Bob as a classical description. Bob applies $G^{\otimes3}$ first and then
-  $R$.
-- Conjugating into the hidden register order gives
-  $\pi_E^{-1}R\pi_E=R_D\otimes R_0\otimes R_+$. Bob knows $R$ in permuted coordinates but does
-  not know which factor acts on data, $0$-traps, or $+$-traps.
-- In the manuscript notation, $R$ is $P'_{\pi_E}$ and
-  $(R_D,R_0,R_+)=(Q',P'_0,P'_+)$. The talk renames the operators so $R$ reads
-  as re-encryption.
-- Since the directly supported gate normalizes Paulis, write
-  $G^\dagger R_sG=X^{a_s}Z^{b_s}$. After applying $\pi_0^{-1}$ and
-  $\pi_+^{-1}$, the
-  expected strings are $(a_0\oplus e,u)$ and $(b_+\oplus f,v)$.
-- On acceptance the TTP retains $R_DG\ket{D_j}$ and updates the data pad to
-  $Q_{\mathrm{new}}=R_DGQG^\dagger$.
-- A tensor product of three independent $w$-qubit Paulis is equivalently
-  uniform in $\mathcal P_{3w}$; global Pauli phases are irrelevant.
-- This is still a candidate construction. The complete coherent-attack and
-  culprit-attribution arguments are being finalized.
+- Same interaction; coral marks the additions. $R$ is a fresh Pauli on the
+  permuted triple, sent classically. Bob applies $G^{\otimes3}$ and then $R$.
+- Here $G$ is the current physical gate and $Q$ collects the existing pads. In
+  hidden order,
+  $\pi_E^{-1}R\pi_E=R_D\otimes R_0\otimes R_+$; Bob cannot identify the three
+  roles.
+- In manuscript notation, $R=P'_{\pi_E}$ and
+  $(R_D,R_0,R_+)=(Q',P'_0,P'_+)$. Independent component Paulis are uniform in
+  $\mathcal P_{3w}$ up to irrelevant phase.
+- Write $G^\dagger R_sG=X^{a_s}Z^{b_s}$. After applying
+  $\pi_0^{-1},\pi_+^{-1}$ to the outcomes, the expected strings are
+  $(a_0\oplus e,u)$ and $(b_+\oplus f,v)$.
+- On acceptance the TTP retains $R_DGQ_D\ket{D_j}$, representing
+  $G\ket{D_j}$ under $Q_{D,\mathrm{new}}=R_DGQ_DG^\dagger$.
+- This remains a candidate construction; the coherent-attack and
+  culprit-attribution arguments are still being finalized.
 
 ---
 
@@ -888,30 +869,35 @@ around the first four labelled $\pi_{\mathsf{gate}}(g_t)$, and another dashed
 box around the other four labelled $\pi_{\mathsf{gate}}(I)$. Do not add
 micro-labels such as “hidden triple”, “apply”, “trap pairs”, or “outcomes”. Put
 a right-hand brace `}` on the right labelled $t=1,\ldots,T$. Leave generous
-padding below the lowest arrow in each dashed region.]
+padding below the lowest arrow in each dashed region. Give both regions the
+same neutral background. In each set of four arrows, color the first two blue,
+the third gold, and the fourth dashed gray.]
 
 The first four-arrow region is labelled only
 $\pi_{\mathsf{gate}}(g_t)$; the second is labelled only
-$\pi_{\mathsf{gate}}(I)$. Each region is the primitive from the previous slide
-and internally repeats over $j\in[n]$.
+$\pi_{\mathsf{gate}}(I)$.
 
 **For every circuit gate, run $\pi_{\mathsf{gate}}$ twice, with Alice and Bob
 exchanging roles.**
 
 ### Speaker notes
 
-- For Alice's input, Alice is the sender and Bob is the verifier. In the
-  actual-gate call Bob evaluates and Alice checks. In the identity call the
-  roles reverse.
-- Show all eight arrows with no arrow-level labels; the repeated geometry and
-  the two $\pi_{\mathsf{gate}}$ labels are enough.
-- A circuit is not literally eight messages total: this pair of calls repeats
-  for every instruction, and every call repeats over all physical code
-  coordinates.
-- Technically, directly supported gates use this primitive. Measurements use a
-  separate trap-checked primitive, and the remaining gate is compiled using a
-  magic state. Keep those details oral or on the advance-preparation slide.
-- This is a candidate construction and its load-bearing coherent-attack argument is still being finalized. Do not present the security statement as a finished theorem.
+- For Alice's input, Alice is the sender and Bob the verifier. Bob evaluates
+  the actual gate and Alice checks; the identity pass reverses their roles.
+- Show all eight arrows even if the labels are abbreviated; the repeated
+  geometry is the point.
+- In each four-message call, blue marks the evaluator exchange, gold the trap
+  pair sent to the checker, and dashed gray the classical outcomes.
+- A circuit is not eight messages total: the pair repeats for every directly
+  supported instruction and each gate call repeats over every physical
+  coordinate.
+- The identity pass makes both parties serve as evaluator and refreshes the
+  hidden state before the next instruction.
+- Measurement instructions use a separate trap-checked primitive. Other gate
+  and measurement details in the active rewrite are less polished, so keep
+  the visible claim to one generic circuit step.
+- This is a candidate construction. The load-bearing coherent-attack security
+  argument is still being finalized; do not present it as a finished theorem.
 
 ---
 
@@ -970,13 +956,11 @@ and the slide makes no parallel-composition-security claim.]
 
 # Result: Feasibility with a Quantum TTP
 
-**All quantum resources are input-independent.**
-
-**Before either input is known, the TTP prepares:**
+**During pre-processing, the TTP prepares:**
 
 - $(I\otimes\mathsf{TEnc})\ket{\mathrm{EPR}}$ for input encoding;
-- $Q_0\,\mathsf{QEnc}(\ket0)$ and $Q_T\,\mathsf{QEnc}(\ket T)$ in the VQFHE
-  evaluation key, where $\ket T:=T\ket+$;
+- $\mathsf{TEnc}(\ket0)$ and $\mathsf{TEnc}(\ket+)$ in the VQFHE evaluation
+  key;
 - $X^x\ket0$ and $Z^z\ket+$ traps for gate evaluation;
 - $G X^x\ket0$ and $G Z^z\ket+$ traps measured during gate verification.
 
@@ -984,32 +968,32 @@ and the slide makes no parallel-composition-security claim.]
 list appear first; pause after the list, then reveal the `Online:` capability
 boundary.]
 
-**Online:** quantum storage and routing only; checks and key updates are
-classical.
+**Online:** quantum storage and communication; routing uses only **SWAP
+gates**.<br>
+Checks and key updates are classical.
 
 ### Speaker notes
 
-- This restates the feasibility result as a resource theorem after the
-  audience has seen the full protocol.
-- All listed quantum resources are input-independent and can be prepared
-  before Alice or Bob supplies an input.
+- This restates the feasibility result as a resource theorem: every listed
+  quantum state is input-independent and can be prepared before Alice or Bob
+  supplies an input.
 - The visible $\mathsf{TEnc}$ in the first bullet is the same schematic
   shorthand used earlier. The actual retained halves are QEC encoded and
   one-time padded; teleportation moves the inputs into them.
-- The visible “VQFHE evaluation key” wording groups the encoded, padded
-  $\ket0$ and $\ket T$ resources under their familiar role. The manuscript's
-  preprocessed resource pool is more explicit than this shorthand.
-- A standard injection consumes $\ket T$ using an entangling gate, a
-  measurement, and outcome-dependent corrections.
-- The third and fourth bullets are the two pairs in a checked-gate call:
+- The second bullet is audience-level shorthand for protected auxiliary inputs
+  in the VQFHE evaluation key. It is not a claim that $\ket0$ and $\ket+$
+  alone are a complete universal evaluation key; the exact construction
+  includes additional gate-dependent resources.
+- The last two visible bullets are the two pairs in a checked-gate call:
   evaluator traps and fresh known-output traps for the verifier's
-  measurements. Their pad strings are independently random; the repeated
-  $x,z$ notation is schematic.
-- The separate checked computational-basis measurement primitive uses a fresh
-  $X^r\ket0$ trap. The exact resource count depends on the circuit and on
-  whether it is chosen adaptively.
-- The TTP also keeps classical one-time-pad keys, secret permutations, and expected
-  test outcomes.
+  measurements. Their pads are independent; repeated $x,z$ is schematic. A
+  separate checked computational-basis measurement uses a fresh $X^r\ket0$
+  trap.
+- The TTP also keeps classical one-time-pad keys, secret permutations, and
+  expected test outcomes.
+- Online, the TTP stores and communicates quantum registers. Its routing
+  operations can be implemented with SWAP gates; the tests and one-time-pad
+  updates are classical.
 - Say “candidate theorem”: the current manuscript has the construction and a
   proof sketch, while the complete security proof and some circuit details
   remain in progress.
