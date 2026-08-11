@@ -2,6 +2,9 @@
 
 > Working Markdown for the 40-minute theory-group presentation.
 > We will refine this slide-by-slide. Notes in brackets are production/speaker notes, not necessarily slide text.
+>
+> Current build: **30 numbered frames** and **45 physical PDF pages**:
+> 13 overlay-continuation pages plus two unnumbered reference pages.
 
 # Title
 
@@ -21,8 +24,8 @@ Sri AravindaKrishnan Thyagarajan
 # Fair Exchange: Who Goes First?
 
 [Large visual: Alice on the left, Bob on the right, with a plain two-way arrow
-between them. Put each party's asset directly below that party rather than on
-the arrow.]
+between them. Put `$100` and `Digital ticket` directly below the corresponding
+party rather than on the arrow.]
 
 ```text
         Alice                       Bob
@@ -48,16 +51,13 @@ the arrow.]
 
 [Large visual: the ticket goes directly from Bob to Alice; only the payment goes through the trusted institution.]
 
-                              🏦 Bank / Card Network
-                               │
-                          payment / dispute
-                               │
-                               ▼
-
-**Alice**  ------------------- $100 ------------------->  **Bob**
-   ▲                                                       │
-   │                                                       │
-   └---------------- 🎫 Digital Ticket --------------------┘
+                         🏦 Bank / card network
+                         ↗                   ↘
+                     $100                     payment
+                       /                         \
+                **Alice**                     **Bob**
+                    ▲                            │
+                    └──── 🎫 Digital ticket ─────┘
 
 | Trusted institutions can intervene | Cash-like exchange? |
 |---|---|
@@ -74,6 +74,7 @@ the arrow.]
 - Preview quantum money as another possible form of digital cash. We will explain it on the next slide rather than defining it here.
 - This is the setting in which fair exchange becomes interesting for the talk: Alice and Bob transact directly, so there is no trusted mediator available to resolve the exchange.
 - Avoid saying that cryptocurrency has “no trusted parties” at all. The narrower claim is that a direct transaction need not be mediated by a trusted intermediary.
+- The ticket travels directly from Bob to Alice; only the payment path uses the trusted institution.
 
 ---
 
@@ -81,18 +82,24 @@ the arrow.]
 
 | | Cryptocurrency / Blockchain | Quantum Money |
 |---|---|---|
-| **Issuance** | Network rules | Bank / issuer |
-| **Prevent double spending** | Shared transaction record | No-cloning + cryptography |
-| **Transfer** | Record the transfer on a global blockchain | Send the quantum state |
-| **Fair exchange** | Programmed all-or-nothing exchange | **???** |
+| **Minting** | Network rules (e.g. mining) | Bank |
+| **Security** | Blockchain consensus | No-cloning |
+| **Transfer** | New block | Send the quantum state |
+| **Fair exchange** | Atomic swap, smart contract, etc. | **???** |
 
 ### Speaker notes
 
 - Cryptocurrency and quantum money are two very different approaches to digital cash.
-- For cryptocurrency, issuance can be governed by mining or the protocol; for quantum money, think of a bank or issuer minting quantum banknotes.
-- The key contrast for this talk is transfer: cryptocurrency records a transfer on global infrastructure, while quantum money can be imagined as sending the money state itself.
+- For cryptocurrency, minting follows network rules---for example,
+  proof-of-work mining. Do not imply that every cryptocurrency uses mining.
+- The security row compresses two different threats: blockchain consensus
+  prevents double spending, while quantum-money security prevents
+  counterfeiting.
+- The transfer row is a cartoon: a cryptocurrency transfer is included and
+  confirmed in a new block, whereas quantum money transfers the state itself.
 - The bank may mint quantum money without mediating every payment.
-- For blockchain-based assets, fair exchange can be implemented using mechanisms such as atomic swaps and smart contracts.
+- Atomic swaps and smart contracts are familiar mechanisms for fair exchange
+  on blockchains.
 - Pause at the final **???**.
 - Transition: “What is the analogue for quantum money? That is the question of this project.”
 - We are deliberately simplifying the quantum-money column: no-cloning alone is not a construction of secure quantum money.
@@ -101,7 +108,7 @@ the arrow.]
 
 # Classical Fair Exchange
 
-[Large visual: one tall central fair-exchange box. All assets are labels on
+[Large visual: one tall central fair-exchange box. All inputs are labels on
 plain horizontal arrows; use exactly the same coordinates on the next three
 slides.]
 
@@ -118,7 +125,7 @@ If both inputs are valid, **swap them**.
 ### Speaker notes
 
 - Abstract away the implementation and imagine an ideal fair-exchange box.
-- Alice submits her classical asset `$_A`; Bob submits `$_B`.
+- Alice submits her classical input `$_A`; Bob submits `$_B`.
 - If both inputs are valid, the functionality swaps them.
 - Keep this slide simple; the cheating / rejection behavior comes next.
 
@@ -137,14 +144,15 @@ Bob's output arrow.]
                        +------------------+
 ```
 
-If Bob submits an invalid asset, Alice receives **Rej**.
+If Bob cheats, Alice receives **Rej**.
 
 ### Speaker notes
 
-- Bob may cheat and submit garbage instead of a valid asset.
+- Bob may cheat and submit garbage instead of a valid input.
 - The ideal functionality rejects the exchange and tells Alice `Rej`.
 - There is no need to return `$_A` to Alice: this is classical information, so Alice already knows / can retain her own input.
-- This apparently trivial point will become important when the asset is quantum.
+- This apparently trivial point becomes important when the input is a quantum
+  state.
 
 ---
 
@@ -165,10 +173,12 @@ classical to quantum.]
 
 ### Speaker notes
 
-- Change only one thing from the previous slide: Alice's asset is now a quantum state.
+- Change only one thing from the previous slide: Alice's input is now a
+  quantum state.
 - Classically, returning only `Rej` was fine because Alice could retain her classical input.
 - But Alice may have sent her only copy of `|$_A⟩` into the protocol.
-- If Bob cheats and the protocol simply rejects, Alice may have lost her asset.
+- If Bob cheats and the protocol simply rejects, Alice may have lost her input
+  state.
 - Pause on: “Where is Alice's money?”
 - This is the point where the classical ideal functionality is no longer the right notion.
 
@@ -177,7 +187,7 @@ classical to quantum.]
 # Quantum Fair Exchange: Rejection
 
 [Keep the exact same diagram, but change Alice's output to return her quantum
-asset on rejection.]
+input on rejection.]
 
 ```text
  Alice                 +------------------+                 Bob
@@ -187,19 +197,24 @@ asset on rejection.]
                        +------------------+
 ```
 
-If Bob submits an invalid asset, Alice gets her quantum asset back.
+If Bob cheats, Alice gets her quantum input back.
 
 ### Speaker notes
 
-- For quantum fair exchange, rejection must preserve the honest party's asset.
-- If Bob cheats, Alice should not merely learn that the exchange failed; she should recover a usable quantum asset.
+- Rejection must preserve the honest party's input.
+- If Bob cheats, Alice should recover a usable version of her quantum input,
+  not merely learn that the exchange failed.
 - Unlike in the classical case, this requirement is nontrivial because Alice cannot in general keep a backup copy of an unknown quantum state.
 - This is the key change in the ideal functionality caused by no-cloning.
-- Transition: now formalize what counts as a valid / usable returned quantum asset, especially when verification itself may transform the state.
+- Next, formalize what counts as a valid or usable returned input state,
+  especially when verification can transform the state.
 
 ---
 
 # Literature Survey
+
+[Reveal this slide in four overlays: first classical fair exchange, then
+multiparty quantum computation, then VQFHE, and finally the conclusion box.]
 
 - **Classical fair exchange:** studied since the early 1980s
 
@@ -211,7 +226,7 @@ If Bob submits an invalid asset, Alice gets her quantum asset back.
   - A key technical building block
   - `[ADSS17]`
 
-> Identifying the cheater does not return the honest party's quantum asset.
+> Identifying the cheater does not return the honest party's quantum input.
 
 ### Speaker notes
 
@@ -220,7 +235,8 @@ If Bob submits an invalid asset, Alice gets her quantum asset back.
 - The closest quantum line of work for this talk is multiparty quantum
   computation with identifiable abort.
 - Identifiable abort gives accountability: if someone cheats, we can identify the cheating party and abort.
-- For fair exchange, accountability alone does not answer what happens to the honest party's quantum asset.
+- For fair exchange, accountability alone does not answer what happens to the
+  honest party's quantum input.
 - Mention VQFHE only as a technical building block here; defer the technical review until after the main goals / theorems.
 - Use mnemonic alphabetic labels, with one author initial per surname, rather
   than numeric references. This makes `[ACCHLS21, CHTZ24]` and `[ADSS17]`
@@ -229,6 +245,10 @@ If Bob submits an invalid asset, Alice gets her quantum asset back.
 ---
 
 # Main Goals
+
+[Reveal this slide in three overlays. Overlay 1 stops after “We aim to show two
+complementary results:”. Overlay 2 adds the classical-TTP impossibility result;
+overlay 3 adds the limited-quantum-capabilities result.]
 
 We define **quantum fair exchange** for quantum states that cannot be copied.
 
@@ -254,7 +274,7 @@ We aim to show two complementary results:
 
 ---
 
-# Impossibility with a Classical Trusted Party
+# Our Impossibility Result
 
 [Main-result slide. Hard-code perfect honest correctness for the talk.]
 
@@ -275,8 +295,9 @@ $$
   $1/(2T)$ by $p/(2T)$, up to fairness and correctness errors.
 - The $1/T$ quantity is the scale of the **cloning attack's success**, not an
   upper bound on honest protocol success.
-- Operational unclonability means that, from one identified asset, producing
-  two usable versions of that same asset has negligible probability.
+- Operational unclonability means that, from one identified input state,
+  producing two usable versions of that same input state has negligible
+  probability.
 - Textbook deterministic no-cloning alone is not a quantitative security game; the operational unclonability premise is what makes the direct reduction sound.
 - Alice and Bob may exchange quantum messages. The restriction is that the trusted party has no quantum state that must remain uncopyable.
 - BB84 is one concrete witness used by the longer manuscript proof; omit it
@@ -286,9 +307,9 @@ $$
 
 ---
 
-# Suppose the Assets Change Hands in Round $t$
+# Reduction Intuition
 
-For the intuition, suppose one round completes the exchange.
+Suppose the exchange happens in round $t$.
 
 [Draw Alice and Bob with two clean crossing arrows. The upper Alice-to-Bob
 arrow is teal and labelled $\ket{\$_A}$; the lower Bob-to-Alice arrow is gold
@@ -303,7 +324,7 @@ $$
 ### Speaker notes
 
 - This is explicitly an intuition slide. A general protocol need not send raw
-  asset registers or have one sharp exchange round.
+  input registers or have one sharp exchange round.
 - In the sharp cartoon, choosing the exchange round costs probability $1/T$.
 - Formally, the proof uses same/adjacent stopping experiments and obtains a
   mismatch of order $1/T$ by averaging. Do not charge a second random-guess
@@ -312,9 +333,9 @@ $$
 
 ---
 
-# Let Only One Direction Through
+# The Reduction
 
-At round $t^*$, deliver Alice's state to Bob and withhold Bob's state from
+At round $t^*$, deliver Alice's message to Bob and withhold Bob's message from
 Alice.
 
 [Draw Alice and Bob. The upper Alice-to-Bob arrow is solid teal and labelled
@@ -329,14 +350,14 @@ out, and labelled $\ket{\$_B}$ withheld.]
 
 ### Speaker notes
 
-- This is an operational cartoon. The arrows need not literally be raw asset
+- This is an operational cartoon. The arrows need not literally be raw input
   registers.
 - Because the TTP holds only bits, the reduction can copy those bits before
   round $t^*$ and let the two stopping experiments finish separately.
-- If Bob accepts, he has Alice's identified asset. If Alice rejects,
-  asset-preserving fairness must return that same identified asset to her.
+- If Bob accepts, he has Alice's identified input. If Alice rejects,
+  input-preserving fairness must return that same identified input to her.
 - If Alice receives nothing, fairness is already broken. If she receives her
-  asset, the two outputs constitute a clone.
+  input back, the two outputs constitute a clone.
 - Formally, same-cut and adjacent-cut cases show that one of the $T$ locations
   produces this mismatch with probability $\Omega(1/T)$.
 - No quantum register is copied as an intermediate step; the contradiction is
@@ -344,12 +365,15 @@ out, and labelled $\ket{\$_B}$ withheld.]
 
 ---
 
-# What We Show---and What Remains
+# Feasibility: What We Show
+
+[Reveal this slide in three overlays: correctness, then input-state preservation,
+then the composable-security work item.]
 
 | **Property-based security** | **Still in progress** |
 |---|---|
 | **Correctness:** If both parties are honest, they accept and receive each other's states. | Composable security. |
-| **Asset preservation (soundness):** An honest party leaves with a valid state:<br><br>$\mathsf{Acc}\Longrightarrow$ the other party's asset;<br>$\mathsf{Rej}\Longrightarrow$ its own asset. | |
+| **Input-state preservation (soundness):** An honest party leaves with a valid state:<br><br>$\mathsf{Acc}\Longrightarrow$ the other party's input;<br>$\mathsf{Rej}\Longrightarrow$ its own input. | |
 
 ### Speaker notes
 
@@ -364,6 +388,56 @@ out, and labelled $\ket{\$_B}$ withheld.]
   still being finalized.
 - Simulation-based security that composes is future work. Do not claim a
   particular composable framework yet.
+- Transition: what changes when the trusted party can actually hold quantum
+  information? Show the whole construction in two pictures before unpacking
+  the machinery.
+
+---
+
+# Protocol Sketch I: Input Encoding
+
+```text
+ Alice                  Input Encoding                  Quantum TTP
+
+ |$_A>  --------------------->
+                              ----------------------> TEnc(|$_A>)
+```
+
+### Speaker notes
+
+- This is a roadmap, not notation the audience is expected to know yet. For
+  now, read $\mathsf{TEnc}$ as “protected encoding”; the next background
+  slides unpack it.
+- The symbol is deliberately schematic. In the concrete protocol, the TTP
+  holds a QEC-encoded, one-time-padded state; fresh hidden tests are inserted
+  during evaluation rather than stored permanently with it.
+- Alice has teleported her unique input into that register and keeps no backup
+  copy.
+- The next cartoon asks how Bob can verify that input without ever receiving
+  it unprotected.
+
+---
+
+# Protocol Sketch II: Verified Evaluation
+
+[Draw plain Quantum-TTP and Bob lanes. The TTP holds
+$\mathsf{TEnc}(\ket{\$_A})$. Draw four unlabelled alternating arrows and put a
+right-hand brace around them labelled $\mathsf{Ver\text{-}Eval}$.]
+
+**Catch a cheating Bob before the encoded state is damaged beyond repair.**
+
+### Speaker notes
+
+- $\mathsf{Ver\text{-}Eval}$ is only a name for the repeated protected
+  interaction in this roadmap; it is not a standard primitive, and the four
+  arrows are not yet the exact messages.
+- The intended effect is to evaluate Alice's public verifier while
+  interleaving checks, so a cheating Bob is caught before accumulated damage
+  exceeds the correction budget.
+- The two-party picture is only intuition. The actual checked-gate protocol is
+  three-party: Alice checks Bob's work, and the roles reverse for Bob's input.
+- Transition: the sketch asks for error correction, hidden tests, and
+  computation that preserves those tests. Build those ingredients next.
 
 ---
 
@@ -384,6 +458,8 @@ $$
 
 ### Speaker notes
 
+- This is the first promised ingredient: it makes “damaged beyond repair”
+  precise by giving each encoded block a correction budget.
 - Keep this at the one-idea level: encode one logical qubit into an entangled
   block of $n$ physical qubits. In the manuscript,
   $n=\ell_{\mathrm{code}}$.
@@ -399,12 +475,10 @@ $$
 
 ---
 
-# Background: Transversal CNOT
+# Transversal operations
 
 [Show two encoded blocks, one above the other. Apply a physical CNOT between
 every pair of matching positions. Put the CNOT truth table to the right.]
-
-**For the code we use, apply CNOT between matching positions.**
 
 | input | output |
 |---|---|
@@ -450,15 +524,13 @@ to collide with those operations.]
                                              untrusted A
        returned state |psi-tilde'> <-------------------
 
- Rej or |psi_out> <- VerDec_k(|psi-tilde'>)
+ VerDec_k(|psi-tilde'>)  ↦  |psi_out> or Rej
 ```
 
 $$
 \text{accept}\quad\Longrightarrow\quad
 \ket{\psi_{\mathrm{out}}}\approx\ket\psi.
 $$
-
-The attacker may always force rejection.
 
 ### Speaker notes
 
@@ -497,7 +569,7 @@ $$
 **Verified decryption**
 
 1. Undo $X^xZ^z$, then $\pi$.
-2. Measure the $0$-traps in $Z$ and the $+$-traps in $X$.
+2. Measure and check the $\ket{0^n}$ and $\ket{+^n}$ traps.
 3. If any test fails: $\mathsf{Rej}$.
 4. Otherwise return $\mathsf{QDec}(\text{data})$.
 
@@ -519,33 +591,35 @@ $$
 
 # Background: VQFHE
 
-**VQFHE = verifiable quantum fully homomorphic encryption.**
-
 [Use plain client/server lanes and no boxes around local operations.]
 
 ```text
  Client                                                Server
 
- (pk,sk,evk) <- KeyGen
- ct <- Enc_pk(|x>)
+ (pk,sk) <- KeyGen
+ |phi-tilde> <- Enc_pk(|phi>)
 
-          (ct,evk,C) --------------------------------->
-                        (ct-tilde,log) <- Eval_evk(C,ct)
-          (ct-tilde,log) <-----------------------------
+          (|phi-tilde>,C) ---------------------------->
+                     |psi-tilde> <- Eval_pk(C,|phi-tilde>)
+          |psi-tilde> <--------------------------------
 
- Rej or |y> <- VerDec_sk(C,ct-tilde,log)
+ VerDec_sk(|psi-tilde>)  ↦  |psi> or Rej
 ```
 
 $$
-\text{honest server: }\ket y=C\ket x,
-\qquad
-\text{malicious server: }\mathsf{Rej}\text{ or }\ket y\approx C\ket x.
+\mathsf{Accept}\quad\Longrightarrow\quad
+\ket\psi\approx C\ket\phi.
 $$
 
 ### Speaker notes
 
-- This is the security interface, separated from the concrete CNOT mechanism
-  on the next slide.
+- This is the abstraction behind the $\mathsf{Ver\text{-}Eval}$ roadmap label:
+  compute on a protected state and accept only a certified result.
+- This is a deliberately simplified public-key interface, separated from the
+  concrete CNOT mechanism on the next slide.
+- In the full VQFHE syntax, an evaluation key and a computation log may appear
+  separately. Here the evaluation key is folded into $\mathsf{pk}$, and the
+  log into the returned $\ket{\widetilde\psi}$.
 - The visible pure-state equation is the unitary cartoon. For a general
   circuit, write $\rho_{\mathrm{out}}\approx\Phi_C(\rho)$ and preserve
   entanglement with an external reference.
@@ -558,30 +632,19 @@ $$
 
 # Background: Homomorphic CNOT
 
-Two trap-code ciphertexts use the **same hidden shuffle** $\pi$, but
+Both ciphertexts use the **same hidden permutation** $\pi$ and
 **independent one-time pads**.
 
-[Show the two shuffled $3n$-position ciphertext blocks one above the other.
-Use the same hidden color pattern in both blocks only as an explanatory view,
-and apply one physical CNOT between every pair of corresponding positions. A
-brace below says “apply $\mathsf{CNOT}^{\otimes 3n}$”.]
+[Show the two permuted $3n$-position ciphertext blocks one above the other.
+Use the same two-color hidden pattern in both blocks only as an explanatory
+view, and apply one physical CNOT between every pair of corresponding
+positions. A brace below says “apply $\mathsf{CNOT}^{\otimes 3n}$”.]
 
 $$
-\bigl(\widetilde\sigma'_{\psi},\widetilde\sigma'_{\phi}\bigr)
+\bigl(\ket{\widetilde\psi'},\ket{\widetilde\phi'}\bigr)
 \leftarrow
 \mathsf{CNOT}^{\otimes 3n}
-\bigl(\widetilde\sigma_{\psi},\widetilde\sigma_{\phi}\bigr).
-$$
-
-Encrypted pad keys are updated by XOR:
-
-$$
-(\widehat x_1,\widehat z_1,\widehat x_2,\widehat z_2)
-\longmapsto
-(\widehat x_1,
- \widehat z_1\mathbin\oplus\widehat z_2,
- \widehat x_1\mathbin\oplus\widehat x_2,
- \widehat z_2).
+\bigl(\ket{\widetilde\psi},\ket{\widetilde\phi}\bigr).
 $$
 
 ### Speaker notes
@@ -592,15 +655,19 @@ $$
   not know which positions are encoded data, $0$-tests, or $+$-tests.
 - Both ciphertext blocks share the same secret permutation $\pi$ so that
   corresponding types line up, but their Pauli pads are sampled independently.
-- Hats denote classical homomorphic encryptions of the pad keys. The evaluator
-  computes the four XOR expressions under the classical encryption scheme.
 - For the first block as control, the exact Pauli-key rule is
   $(x_1,z_1,x_2,z_2)\mapsto
-  (x_1,z_1\oplus z_2,x_1\oplus x_2,z_2)$.
+  (x_1,z_1\oplus z_2,x_1\oplus x_2,z_2)$. Keep this analysis off the visible
+  construction slide.
 
 ---
 
-# Background: Why Homomorphic CNOT Works
+# Background: Homomorphic CNOT Analysis
+
+[Reveal this slide in six overlays. Overlay 1 shows the two encryption
+equations and the common-$\pi$/independent-pad reminder. Overlays 2--5 reveal,
+in order, the new-pad-keys, same-permutation, logical-CNOT, and tests-unchanged
+rows. Overlay 6 reveals the `[ADSS17]` universality remark.]
 
 $$
 \begin{aligned}
@@ -617,215 +684,91 @@ $$
 
 Same $\pi$; independently random $Q_1,Q_2$.
 
-Let $U_r:=\mathsf{CNOT}^{\otimes r}$. Then:
+| | Why the operation works |
+|---|---|
+| **new pad keys** | $\mathsf{CNOT}^{\otimes3n}(Q_1\otimes Q_2)=(Q'_1\otimes Q'_2)\mathsf{CNOT}^{\otimes3n}$ |
+| **same permutation** | $\mathsf{CNOT}^{\otimes3n}(\pi\otimes\pi)=(\pi\otimes\pi)\mathsf{CNOT}^{\otimes3n}$ |
+| **logical CNOT** | $\mathsf{CNOT}^{\otimes n}\mathsf{QEnc}^{\otimes2}=\mathsf{QEnc}^{\otimes2}\mathsf{CNOT}$ |
+| **tests unchanged** | $\mathsf{CNOT}\ket{00}=\ket{00}$, $\mathsf{CNOT}\ket{++}=\ket{++}$ |
 
-$$
-\begin{aligned}
-U_{3n}(\pi\otimes\pi)
-  &=(\pi\otimes\pi)U_{3n}
-  &&\text{same positions},\\
-U_{3n}(Q_1\otimes Q_2)
-  &=(Q'_1\otimes Q'_2)U_{3n}
-  &&\text{new pad keys},\\
-U_n\,\mathsf{QEnc}^{\otimes2}
-  &=\mathsf{QEnc}^{\otimes2}\mathsf{CNOT}
-  &&\text{logical CNOT},\\
-\mathsf{CNOT}\ket{00}=\ket{00},\qquad
-\mathsf{CNOT}\ket{++}=\ket{++}
-  &&&\text{tests unchanged}.
-\end{aligned}
-$$
-
-Universality requires a substantially more involved construction `[ADSS17]`.
+Universality gets tricky `[ADSS17]`.
 
 ### Speaker notes
 
 - This slide is the analysis of the preceding construction. Read it from top
-  to bottom: shuffle, pad, data, tests.
+  to bottom in the same order as $Q\pi(\cdot)$: pad, permutation, data, tests.
 - $Q'_1\otimes Q'_2$ is defined by conjugating the original two-block Pauli
-  through $U_{3n}$, so the second identity is exact up to the irrelevant Pauli
-  phase.
-- The first identity is why the two trap-code ciphertexts must share a
+  through $\mathsf{CNOT}^{\otimes3n}$, so the first identity is exact up to
+  the irrelevant Pauli phase.
+- The second identity is why the two trap-code ciphertexts must share a
   permutation. Independent permutations would pair data positions with
   unknown trap types.
 - CNOT is a clean example, but universality in the cited VQFHE construction is
   the technically difficult part.
-
----
-
-# Core Idea: Verify Before Release
-
-The quantum TTP keeps the encoded asset while its verification circuit runs.
-
-**1. Input encoding**
-
-```text
-Alice: |$_A>  -- teleport; QEC + pad -->  Quantum TTP
-                                             holds Q QEnc(|$_A>)
-```
-
-**2. Evaluate $\mathsf{Ver}_A=g_T\cdots g_1$ one step at a time.**
-
-```text
-    g_1  -->  check  -->  g_2  -->  check  -->  ...  -->  g_T  -->  check
-             \_________________________________________________________/
-                       fresh hidden tests after every step
-```
-
-**If a test fails, stop while QEC can still repair the damage.**
-
-### Speaker notes
-
-- At ten thousand feet, the construction is VQFHE-shaped: encode the state,
-  evaluate its public verifier without releasing the asset, and verify the
-  computation.
-- The notation $Q\,\mathsf{QEnc}(\ket{\$_A})$ is intentional. At this stage
-  the TTP holds a QEC-encoded, one-time-padded state, not a persistent standard
-  trap-code ciphertext.
-- For Alice's asset, Bob performs the public verification computation and
-  Alice cross-checks him; the roles reverse for Bob's asset.
-- The important change from one final check is that fresh hidden tests
-  accompany every gate and measurement. The intended guarantee is to detect
-  an attack while accumulated errors remain within the QEC correction budget.
-- The following slides zoom into the two ingredients shown here: input
-  encoding, then checked gate-by-gate evaluation.
-- Only after both verification computations finish does the TTP decide whether
-  to exchange or return the assets.
+- Transition: that was the toolkit. Now instantiate the two idealized protocol
+  pictures, beginning with teleporting the input to the TTP.
 
 ---
 
 # Construction I: Teleport to the TTP
 
-[Use two plain, unboxed vertical lanes, Alice and the quantum TTP. Put a
-right-hand brace `}` around the full exchange, labelled “repeat for each input
-qubit $i$”. Keep this slide to the construction only.]
+[Use two plain, unboxed vertical lanes, Alice and the quantum TTP.]
 
-1. The TTP prepares an entangled pair $(L_i,D_i)$, encodes and pads $D_i$, and
-   keeps it.
-2. The TTP sends one half, $L_i$, to Alice.
-3. Alice Bell-measures $\ket{\psi_i}$ together with $L_i$ and sends the
-   classical Bell outcome $P_i$ to the TTP.
-4. The TTP stores $[\ket{\widetilde\psi_i}\mid Q_i^0]$, where
-
-$$
-Q_i^0=Q_i^{\mathrm{init}}\overline{P_i}.
-$$
+1. The TTP prepares
+   $(I\otimes\mathsf{TEnc})\ket{\mathrm{EPR}}$.
+2. TTP $\rightarrow$ Alice: one half of the entangled pair.
+3. Alice teleports $\ket{\$_A}$ into that half and returns the classical
+   teleportation outcome.
+4. The TTP now holds $\mathsf{TEnc}(\ket{\$_A})$.
 
 ### Speaker notes
 
+- Back from the background: this realizes Protocol Sketch I.
 - The manuscript calls this input commitment; for the talk, simply say that
   Alice teleports the state to the TTP. It is not a bit-commitment primitive.
-- This frame is only the construction. Save the interpretation of the final
-  TTP-held state for the next frame.
-- Encoded EPR resources can be prepared before the exchange. During the
-  exchange, the TTP routes $L_i$
-  and updates a classical Pauli key after receiving $P_i$.
+- The visible $\mathsf{TEnc}$ notation intentionally suppresses the classical
+  teleportation correction and the at-rest QEC-plus-pad distinction.
+- More precisely, for each teleported input qubit, if the correction is $P_i$,
+  the retained QEC block has pad key
+  $Q_i^0=Q_i^{\mathrm{init}}\overline P_i$. There is no trap permutation in
+  the at-rest state.
+- Encoded entangled pairs can be prepared before the exchange. During the
+  exchange, the TTP sends one half and updates only a classical one-time-pad
+  key after Alice's teleportation measurement.
 - Teleportation preserves entanglement with an external reference system.
+- Next: realize $\mathsf{Ver\text{-}Eval}$ one checked gate at a time.
 
 ---
 
-# Construction I: What the TTP Holds
+# Construction II: One Checked Gate
 
-The quantum TTP stores
-
-$$
-\bigl(\ket{\widetilde\psi},Q^0\bigr),
-\qquad
-\ket{\widetilde\psi}
-=Q^0\,\mathsf{QEnc}(\ket\psi).
-$$
-
-- The TTP holds the **encoded state and its one-time-pad key**.
-- Alice retains **no backup copy** of the teleported input.
-- This is QEC plus a quantum one-time pad. **Fresh hidden tests** are inserted
-  only when a gate is evaluated.
-
-### Speaker notes
-
-- This is the interpretation separated from the preceding construction
-  diagram.
-- Operationally, the TTP ends with a fixed encrypted codeword that Alice can
-  no longer modify or duplicate.
-- Alice did not send a register carrying $\ket\psi$ directly to the TTP.
-  Teleportation placed the state in the already encoded and padded retained
-  half of the entangled pair.
-- The stored state is not a persistent standard trap-code ciphertext and is
-  not yet authenticated by traps. Integrity comes from fresh checks during
-  each operation.
-
----
-
-# Construction II: Bob Applies a Gate
-
-[Use unboxed Quantum-TTP and Bob lanes, with a right-hand brace `}` labelled
-$j=1,\ldots,n$.]
-
-For position $j$, let $G:=g^{(j)}$ and let $\ket{D_j}$ be the encrypted data.
-The TTP prepares
+For one physical position, define
 
 $$
-\ket{E_0}=X^e\ket{0^w},
-\qquad
-\ket{E_+}=Z^f\ket{+^w},
+G:=g^{(j)},\qquad
+\ket W:=\pi_E\bigl(\ket{D_j},X^e\ket{0^w},Z^f\ket{+^w}\bigr).
 $$
 
-and secretly shuffles these three states and chooses new pad keys
-$Q',P'_0,P'_+$.
+[There is no visible “without re-encryption” line. Use the same fixed-coordinate
+diagram as the next frame: Alice–TTP–Bob lanes, with the middle heading
+shortened to **TTP**, extra Alice–TTP separation, generous vertical spacing
+between all four arrows, and a right-hand brace labelled “repeat for
+$j=1,\ldots,n$”. Reserve the second preamble line invisibly so the two
+diagrams stay page-registered, and stop the TTP's dotted lane above the local
+check equation.]
 
-1. TTP $\rightarrow$ Bob:
-   - quantum: $\pi_E(\ket{D_j},\ket{E_0},\ket{E_+})$;
-   - classical: $\pi_E(Q',P'_0,P'_+)$.
-2. Bob $\rightarrow$ TTP:
-
-   $$
-   \pi_E\!\left(
-     Q'G\ket{D_j},
-     P'_0G\ket{E_0},
-     P'_+G\ket{E_+}
-   \right).
-   $$
-
-**The hidden shuffle forces Bob to treat data and both tests alike.**
-
-### Speaker notes
-
-- Pure-state notation is a talk-level purification shorthand; $D_j$ may be
-  entangled with the other columns and an external reference.
-- Here $w$ is the width of one column and $e,f\in\{0,1\}^w$. The three fresh
-  Paulis lie in $\mathcal P^{\otimes w}$.
-- Bob receives the three Pauli instructions in the same secret order as the
-  data and tests. He therefore applies $Q'G$, $P'_0G$, and $P'_+G$ to the
-  correct anonymous registers without learning which is data.
-- The active manuscript repeats over $j\in[\ell_{\mathrm{code}}]$, not
-  $j\in[3\lambda]$. There are three evaluator registers per position.
-
----
-
-# Construction II: Alice Checks the Result
-
-[Use unboxed Alice and Quantum-TTP lanes. Separate the two arrows enough for
-both two-line labels to fit cleanly between them. Put a right-hand brace `}`
-at the right, labelled $j=1,\ldots,n$.]
-
-The TTP undoes its shuffle, keeps $Q'G\ket{D_j}$, and prepares new tests with
-known outcomes:
-
-$$
-\ket{V_0}=GX^u\ket{0^w},
-\qquad
-\ket{V_+}=GZ^v\ket{+^w}.
-$$
-
-1. TTP $\rightarrow$ Alice:
+1. TTP $\rightarrow$ Bob: $\ket W$.
+2. Bob $\rightarrow$ TTP: $G^{\otimes3}\ket W$.
+3. TTP $\rightarrow$ Alice:
 
    $$
    \begin{aligned}
-   \ket{T_0}&=\pi_0(P'_0G\ket{E_0},\ket{V_0}),\\
-   \ket{T_+}&=\pi_+(P'_+G\ket{E_+},\ket{V_+}).
+   \ket{T_0}&=\pi_0(G X^e\ket{0^w},\,G X^u\ket{0^w}),\\
+   \ket{T_+}&=\pi_+(G Z^f\ket{+^w},\,G Z^v\ket{+^w}).
    \end{aligned}
    $$
 
-2. Alice $\rightarrow$ TTP:
+4. Alice $\rightarrow$ TTP:
 
    $$
    \begin{aligned}
@@ -834,23 +777,107 @@ $$
    \end{aligned}
    $$
 
-The TTP accepts only the expected test results. If they match, it updates the
-one-time-pad key to $Q_{\mathrm{new}}=Q'GQG^\dagger$.
+At the TTP:
+
+$$
+\text{check the trap outcomes }o_0,o_+;
+\qquad
+\text{keep }G\ket{D_j}.
+$$
 
 ### Speaker notes
 
+- This is the warm-up version with no fresh re-encryption. It isolates the
+  four-message check; the next frame adds the missing security layer without
+  moving anything.
+- This is one complete per-coordinate interaction. The TTP checks Alice's
+  reported outcomes before advancing to $j+1$; Bob never touches all
+  coordinates before a check occurs.
+- The visible pure-state notation is a talk-level purification shorthand. The
+  data column $D_j$ may be entangled with the other columns and an external
+  reference.
 - Here $u,v\in\{0,1\}^w$ and the two fresh pair permutations satisfy
-  $\pi_0,\pi_+\in S_2$.
+  $\pi_0,\pi_+\in S_2$; also $e,f\in\{0,1\}^w$.
 - Alice receives each returned test mixed with a fresh known output test.
-- If $G^\dagger P'_0G=X^{a_0}Z^{b_0}$ and
-  $G^\dagger P'_+G=X^{a_+}Z^{b_+}$, the exact checks are
-  $\pi_0^{-1}(o_0)=(a_0\oplus e,u)$ and
-  $\pi_+^{-1}(o_+)=(b_+\oplus f,v)$.
-- The fresh outputs catch a lying checker; discrepancies in the returned tests
-  count against Bob. QEC is intended to absorb the bounded number of corrupted
-  positions before Bob is replaced.
-- This remains a candidate construction while the full coherent-attack and
-  culprit-attribution arguments are finalized.
+- In an honest execution, undoing $G$ makes the old and fresh traps yield
+  exactly $(e,u)$ and $(f,v)$. Under attack, $G\ket{D_j}$ denotes the honest
+  value of the first register retained after the TTP undoes $\pi_E$.
+- If the current data pad is $Q$, the corresponding warm-up update is
+  $Q_{\mathrm{new}}=GQG^\dagger$.
+- This warm-up alone is not the final secure construction: without fresh
+  Pauli re-encryption, correlations can persist between calls.
+
+---
+
+# Construction II: Add Re-encryption
+
+For the same physical position, add
+
+$$
+\begin{gathered}
+G:=g^{(j)},\qquad
+\ket W:=\pi_E\bigl(\ket{D_j},X^e\ket{0^w},Z^f\ket{+^w}\bigr),\\
+R\leftarrow\text{fresh Pauli}.
+\end{gathered}
+$$
+
+[Duplicate the preceding frame's geometry exactly. Render every newly added
+$R$, $R_D$, $R_0$, and $R_+$ in coral so this frame is a visual diff. Keep the
+short middle heading **TTP**, the expanded lane/message spacing, and the same
+right-hand repetition brace. The two-line preamble occupies the same height as
+the warm-up preamble, and the TTP lane again ends before the local check.]
+
+1. TTP $\rightarrow$ Bob: $\bigl(\ket W,R\bigr)$.
+2. Bob $\rightarrow$ TTP: $R\,G^{\otimes3}\ket W$.
+3. TTP $\rightarrow$ Alice:
+
+   $$
+   \begin{aligned}
+   \ket{T_0}&=\pi_0(R_0G X^e\ket{0^w},\,G X^u\ket{0^w}),\\
+   \ket{T_+}&=\pi_+(R_+G Z^f\ket{+^w},\,G Z^v\ket{+^w}).
+   \end{aligned}
+   $$
+
+4. Alice $\rightarrow$ TTP:
+
+   $$
+   \begin{aligned}
+   o_0&\leftarrow\mathsf{Meas}_Z((G^\dagger)^{\otimes2}\ket{T_0}),\\
+   o_+&\leftarrow\mathsf{Meas}_X((G^\dagger)^{\otimes2}\ket{T_+}).
+   \end{aligned}
+   $$
+
+At the TTP:
+
+$$
+\text{check the trap outcomes }o_0,o_+;
+\qquad
+\text{keep }R_DG\ket{D_j}.
+$$
+
+### Speaker notes
+
+- This is the same interaction as the preceding frame. The coral symbols are
+  the only additions: a fresh Pauli re-encryption and its induced corrections.
+- $R$ is a uniformly random Pauli on the permuted three-register block, sent
+  to Bob as a classical description. Bob applies $G^{\otimes3}$ first and then
+  $R$.
+- Conjugating into the hidden register order gives
+  $\pi_E^{-1}R\pi_E=R_D\otimes R_0\otimes R_+$. Bob knows $R$ in permuted coordinates but does
+  not know which factor acts on data, $0$-traps, or $+$-traps.
+- In the manuscript notation, $R$ is $P'_{\pi_E}$ and
+  $(R_D,R_0,R_+)=(Q',P'_0,P'_+)$. The talk renames the operators so $R$ reads
+  as re-encryption.
+- Since the directly supported gate normalizes Paulis, write
+  $G^\dagger R_sG=X^{a_s}Z^{b_s}$. After applying $\pi_0^{-1}$ and
+  $\pi_+^{-1}$, the
+  expected strings are $(a_0\oplus e,u)$ and $(b_+\oplus f,v)$.
+- On acceptance the TTP retains $R_DG\ket{D_j}$ and updates the data pad to
+  $Q_{\mathrm{new}}=R_DGQG^\dagger$.
+- A tensor product of three independent $w$-qubit Paulis is equivalently
+  uniform in $\mathcal P_{3w}$; global Pauli phases are irrelevant.
+- This is still a candidate construction. The complete coherent-attack and
+  culprit-attribution arguments are being finalized.
 
 ---
 
@@ -873,7 +900,9 @@ exchanging roles.**
 
 ### Speaker notes
 
-- For Alice's asset, Alice is the sender and Bob is the verifier. In the actual-gate call Bob evaluates and Alice checks. In the identity call the roles reverse.
+- For Alice's input, Alice is the sender and Bob is the verifier. In the
+  actual-gate call Bob evaluates and Alice checks. In the identity call the
+  roles reverse.
 - Show all eight arrows with no arrow-level labels; the repeated geometry and
   the two $\pi_{\mathsf{gate}}$ labels are enough.
 - A circuit is not literally eight messages total: this pair of calls repeats
@@ -888,20 +917,23 @@ exchanging roles.**
 
 # Construction IV: Full Exchange
 
-[Across the top, use three boxes: `Input encoding` with “both inputs go to the
-TTP”,
-$\pi_{\mathsf{circuit}}(\$_A)$, and
-$\pi_{\mathsf{circuit}}(\$_B)$. Below them, the TTP waits for both verification
-results before branching.]
+[Show the complete flow at once. Keep input encoding centered on the top row
+with a larger vertical gap before the verification row. Put steps 2 and 3 side
+by side, connected by an arrow labelled **then**. From step 2, curve downward
+and inward to the right into the left side of the wait box; from step 3, curve
+downward and inward to the left into its right side. Enlarge both outcome
+panels so their TTP circles and state arrows sit fully inside. The side-by-side
+placement is only a layout choice: the two circuit evaluations are sequential,
+and the slide makes no parallel-composition-security claim.]
 
-1. **Input encoding:** Alice and Bob teleport their assets into separate
-   Pauli-padded QEC blocks held by the TTP.
-2. **Verify Alice's asset:** Bob evaluates Alice's verification circuit; Alice
-   cross-checks him.
-3. **Verify Bob's asset:** Alice evaluates Bob's verification circuit; Bob
-   cross-checks her.
-
-Then the TTP makes one release decision:
+1. **Input encoding:** Alice and Bob teleport their inputs into separate
+   encrypted blocks held by the TTP.
+2. **Verify Alice's input:** Bob evaluates Alice's verification circuit; Alice
+   checks.
+3. **Verify Bob's input:** Alice evaluates Bob's verification circuit; Bob
+   checks.
+4. **Release:** the TTP waits for both verification results, then makes one
+   decision:
 
 ```text
  both accept                               otherwise
@@ -912,19 +944,23 @@ Then the TTP makes one release decision:
      EXCHANGE                             RETURN TO OWNERS
 ```
 
-**Release neither asset until both checks finish.**
-
 ### Speaker notes
 
-- The two one-sided circuit evaluations leave the processed encrypted assets
+- The two one-sided circuit evaluations leave the processed encrypted input states
   and their updated pad keys at the TTP until both verification results are
   known.
-- On success the outputs cross. On failure each updated asset returns to its original owner.
-- Keep the verifier labels semantically clear: Bob runs the public circuit that validates Alice's asset; Alice runs the one that validates Bob's asset. The active rewrite has some subscript naming still being cleaned up.
-- The fairness lever is delayed release: neither party receives the other's unique asset until both checks have completed.
+- On success the outputs cross. On failure each updated input state returns to
+  its original owner.
+- Bob runs the public circuit that validates Alice's input; Alice runs the
+  circuit that validates Bob's input.
+- Steps 2 and 3 are side by side only to save vertical space. The **then**
+  arrow specifies a sequential schedule; no parallel-composition claim is
+  being made.
+- The fairness lever is delayed release: neither party receives the other's
+  unique input until both checks have completed.
 - The quantum resources can be prepared in advance. During the exchange, the
   TTP's quantum behavior is intended to reduce to storage, communication, and hidden
-  shuffles implemented with routing/SWAP; checks and key updates are
+  permutations implemented with routing/SWAP; checks and key updates are
   classical.
 - This removes the copyable-classical-state step from the impossibility
   argument: the trusted party now holds irreplaceable quantum states.
@@ -938,32 +974,56 @@ Then the TTP makes one release decision:
 
 **Before either input is known, the TTP prepares:**
 
-- encoded, one-time-padded halves of entangled pairs;
-- encoded, one-time-padded $\ket 0$ and $\ket T$ blocks;
-- gate-dependent hidden $0$- and $+$-test states;
-- hidden test states for measurements.
+- $(I\otimes\mathsf{TEnc})\ket{\mathrm{EPR}}$ for input encoding;
+- $Q_0\,\mathsf{QEnc}(\ket0)$ and $Q_T\,\mathsf{QEnc}(\ket T)$ in the VQFHE
+  evaluation key, where $\ket T:=T\ket+$;
+- $X^x\ket0$ and $Z^z\ket+$ traps for gate evaluation;
+- $G X^x\ket0$ and $G Z^z\ket+$ traps measured during gate verification.
 
-Here $\ket T:=T\ket+$ is a one-use resource for implementing a $T$ gate.
+[Reveal this frame in two states. The heading and complete offline resource
+list appear first; pause after the list, then reveal the `Online:` capability
+boundary.]
 
-During the exchange, the TTP only stores and moves quantum states. Resource
-selection, test checks, and key updates are classical.
+**Online:** quantum storage and routing only; checks and key updates are
+classical.
 
 ### Speaker notes
 
 - This restates the feasibility result as a resource theorem after the
   audience has seen the full protocol.
 - All listed quantum resources are input-independent and can be prepared
-  before Alice or Bob supplies an asset.
-- The input resources are encoded, padded retained halves of entangled pairs.
-  Teleportation moves the inputs into them.
-- The $\ket0$ and $\ket T$ blocks are work states. A standard injection
-  consumes $\ket T$ using an entangling gate, a measurement, and
-  outcome-dependent corrections.
-- Gate calls use gate-dependent $0$- and $+$-test states; measurement calls use
-  their own test states. The exact count depends on the circuit and on whether
-  it is chosen adaptively.
-- The TTP also keeps classical one-time-pad keys, secret shuffles, and expected
+  before Alice or Bob supplies an input.
+- The visible $\mathsf{TEnc}$ in the first bullet is the same schematic
+  shorthand used earlier. The actual retained halves are QEC encoded and
+  one-time padded; teleportation moves the inputs into them.
+- The visible “VQFHE evaluation key” wording groups the encoded, padded
+  $\ket0$ and $\ket T$ resources under their familiar role. The manuscript's
+  preprocessed resource pool is more explicit than this shorthand.
+- A standard injection consumes $\ket T$ using an entangling gate, a
+  measurement, and outcome-dependent corrections.
+- The third and fourth bullets are the two pairs in a checked-gate call:
+  evaluator traps and fresh known-output traps for the verifier's
+  measurements. Their pad strings are independently random; the repeated
+  $x,z$ notation is schematic.
+- The separate checked computational-basis measurement primitive uses a fresh
+  $X^r\ket0$ trap. The exact resource count depends on the circuit and on
+  whether it is chosen adaptively.
+- The TTP also keeps classical one-time-pad keys, secret permutations, and expected
   test outcomes.
 - Say “candidate theorem”: the current manuscript has the construction and a
   proof sketch, while the complete security proof and some circuit details
   remain in progress.
+
+---
+
+# Thank You
+
+## Questions?
+
+[Disable the frame-title progress bar before this closing frame; leave it off
+on the two reference pages as well.]
+
+### Speaker notes
+
+- Stop here for questions. The two reference pages that follow are unnumbered
+  backup pages.

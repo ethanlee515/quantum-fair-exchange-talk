@@ -1,4 +1,4 @@
-DECK := quantum-fair-exchange-slides-v9
+DECK := quantum-fair-exchange-slides
 NOTES := $(DECK)-notes
 BUILD_DIR := build
 LATEXMK := latexmk

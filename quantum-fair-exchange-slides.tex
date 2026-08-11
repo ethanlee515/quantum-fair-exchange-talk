@@ -81,6 +81,7 @@
 \newcommand{\acclabel}{\ensuremath{\mathsf{Acc}}}
 \newcommand{\rejlabel}{\ensuremath{\mathsf{Rej}}}
 \newcommand{\badinput}[1]{\textcolor{QFECoral}{\textsf{#1}}}
+\newcommand{\reenc}[1]{\textcolor{QFECoral}{#1}}
 
 \newcommand{\takeaway}[1]{%
   \begin{beamercolorbox}[wd=\textwidth,sep=0.85ex,rounded=true,center]{takeaway}
@@ -248,7 +249,7 @@
         node[above right=-1pt,font=\small\bfseries,text=QFEGold!70!black] {payment}
         (bob.north west);
       \draw[ticket] (bob.west) --
-        node[below=4pt,font=\small\bfseries,text=QFETeal] {\faIcon{ticket-alt}\quad Digital ticket (direct)}
+        node[below=4pt,font=\small\bfseries,text=QFETeal] {\faIcon{ticket-alt}\quad Digital ticket}
         (alice.east);
     \end{tikzpicture}
 
@@ -294,22 +295,25 @@
     \toprule
     & \textbf{Cryptocurrency / Blockchain} & \textbf{Quantum Money} \\
     \midrule
-    Issuance & Network rules & Bank / issuer \\
-    Prevent double spending & Shared transaction record & No-cloning + cryptography \\
-    Transfer & Record the transfer on a global blockchain & Send the quantum state \\
+    Minting & Network rules (e.g.\ mining) & Bank \\
+    Security & Blockchain consensus & No-cloning \\
+    Transfer & New block & Send the quantum state \\
     \rowcolor{QFEGoldPale}
-    Fair exchange & Programmed all-or-nothing exchange &
+    Fair exchange & Atomic swap, smart contract, etc. &
       \centering\arraybackslash\textcolor{QFEGold}{\Large\bfseries ???} \\
     \bottomrule
   \end{tabularx}
 
   \note{
+    \footnotesize
     \begin{itemize}
+      \setlength{\itemsep}{0pt}
       \item Cryptocurrency and quantum money are two very different approaches to digital cash.
-      \item For cryptocurrency, issuance can be governed by mining or a protocol; for quantum money, imagine a bank minting quantum banknotes.
-      \item The key contrast is transfer: a blockchain records it globally, whereas quantum money transfers the state itself.
+      \item For cryptocurrency, minting follows network rules---for example, proof-of-work mining. Do not imply that every cryptocurrency uses mining.
+      \item The security row compresses two different threats: blockchain consensus prevents double spending, while quantum-money security prevents counterfeiting.
+      \item The transfer row is a cartoon: a cryptocurrency transfer is included and confirmed in a new block, whereas quantum money transfers the state itself.
       \item The bank may mint quantum money without mediating every payment.
-      \item Atomic swaps and smart contracts can implement fair exchange for blockchain-based assets.
+      \item Atomic swaps and smart contracts are familiar mechanisms for fair exchange on blockchains.
       \item Pause at the final ``???'' and ask for the analogue for quantum money.
       \item No-cloning alone is not a construction of secure quantum money; this table is deliberately simplified.
     \end{itemize}
@@ -330,7 +334,7 @@
   \note{
     \begin{itemize}
       \item Abstract away the implementation and imagine an ideal fair-exchange box.
-      \item Alice submits her classical asset \asset{A}; Bob submits \asset{B}.
+      \item Alice submits her classical input \asset{A}; Bob submits \asset{B}.
       \item If both inputs are valid, the functionality swaps them.
       \item Keep this slide simple; cheating and rejection come next.
     \end{itemize}
@@ -342,14 +346,14 @@
   \exchangefunctionality{\asset{A}}{\badinput{garbage}}{\textcolor{QFECoral}{\rejlabel}}{}
 
   \vspace{0.2em}
-  {\large If Bob submits an invalid asset, Alice receives \textbf{\rejlabel}.\par}
+  {\large If Bob cheats, Alice receives \textbf{\rejlabel}.\par}
 
   \note{
     \begin{itemize}
-      \item Bob may cheat and submit garbage instead of a valid asset.
+      \item Bob may cheat and submit garbage instead of a valid input.
       \item The ideal functionality rejects and tells Alice \rejlabel.
       \item There is no need to return \asset{A}: this is classical information, so Alice can already retain or know her input.
-      \item This apparently trivial point becomes important when the asset is quantum.
+      \item This apparently trivial point becomes important when the input is a quantum state.
     \end{itemize}
   }
 \end{frame}
@@ -363,10 +367,10 @@
 
   \note{
     \begin{itemize}
-      \item Change only one thing from the previous slide: Alice's asset is now a quantum state.
+      \item Change only one thing from the previous slide: Alice's input is now a quantum state.
       \item Classically, returning only \rejlabel{} was fine because Alice could retain her input.
       \item Alice may have sent her only copy of \qasset{A} into the protocol.
-      \item If Bob cheats and the protocol simply rejects, Alice may have lost her asset.
+      \item If Bob cheats and the protocol simply rejects, Alice may have lost her input state.
       \item Pause on ``Where is Alice's money?''
       \item This is why the classical ideal functionality is no longer the right notion.
     \end{itemize}
@@ -378,16 +382,16 @@
   \exchangefunctionality{\qasset{A}}{\badinput{garbage}}{\qasset{A}\; +\; \textcolor{QFECoral}{\rejlabel}}{}
 
   \vspace{0.2em}
-  {\large If Bob submits an invalid asset, Alice gets her
-    \textbf{quantum asset back}.\par}
+  {\large If Bob cheats, Alice gets her
+    \textbf{quantum input back}.\par}
 
   \note{
     \begin{itemize}
-      \item Rejection must preserve the honest party's asset.
-      \item If Bob cheats, Alice should recover a usable quantum asset, not merely learn that the exchange failed.
+      \item Rejection must preserve the honest party's input.
+      \item If Bob cheats, Alice should recover a usable version of her quantum input, not merely learn that the exchange failed.
       \item This is nontrivial because Alice cannot generally keep a backup copy of an unknown quantum state.
       \item This is the key change in the ideal functionality caused by no-cloning.
-      \item Next, formalize what counts as a valid or usable returned asset, especially when verification can transform the state.
+      \item Next, formalize what counts as a valid or usable returned input state, especially when verification can transform the state.
     \end{itemize}
   }
 \end{frame}
@@ -399,34 +403,41 @@
 \begin{frame}{Literature Survey}
   \begin{columns}[T,onlytextwidth]
     \column{0.31\textwidth}
-      \begin{block}{Classical fair exchange}
-        \small
-        Studied since the early 1980s.
-
-      \end{block}
+      \uncover<1->{%
+        \begin{block}{Classical fair exchange}
+          \small
+          Studied since the early 1980s.
+        \end{block}%
+      }
 
     \column{0.335\textwidth}
-      \begin{block}{Multiparty quantum computation}
-        \small
-        Identifiable abort: identify the cheating party and abort.
+      \uncover<2->{%
+        \begin{block}{Multiparty quantum computation}
+          \small
+          Identifiable abort: identify the cheating party and abort.
 
-        \medskip
-        \cite{alon-et-al-identifiable-abort,chung-et-al-pvia}
-      \end{block}
+          \medskip
+          \cite{alon-et-al-identifiable-abort,chung-et-al-pvia}
+        \end{block}%
+      }
 
     \column{0.31\textwidth}
-      \begin{block}{{\small Verifiable quantum\\homomorphic encryption}}
-        \small
-        A key technical building block.
+      \uncover<3->{%
+        \begin{block}{{\small Verifiable quantum\\homomorphic encryption}}
+          \small
+          A key technical building block.
 
-        \medskip
-        \cite{alagic-et-al-vqfhe}
-      \end{block}
+          \medskip
+          \cite{alagic-et-al-vqfhe}
+        \end{block}%
+      }
   \end{columns}
 
   \vspace{0.9em}
-  \questionbox{Identifying the cheater does not return the honest party's
-    quantum asset.}
+  \uncover<4->{%
+    \questionbox{Identifying the cheater does not return the honest party's
+      quantum input.}%
+  }
 
   \note{
     \begin{itemize}
@@ -434,7 +445,7 @@
       \item If useful: ``Aravind probably knows much more of this history than I do, so I'll skip ahead about forty years.''
       \item The closest quantum line here is multiparty quantum computation with identifiable abort.
       \item Identifiable abort gives accountability: identify the cheating party and abort.
-      \item Fair exchange also asks what happens to the honest party's quantum asset.
+      \item Fair exchange also asks what happens to the honest party's quantum input.
       \item Mention VQFHE only as a technical building block; review it later.
     \end{itemize}
   }
@@ -455,20 +466,24 @@
   \smallskip
   \begin{columns}[T,onlytextwidth]
     \column{0.475\textwidth}
-      \begin{alertblock}{1\quad Classical TTP: impossible in general}
-        Quantum fair exchange is impossible in general, even with a
-        \textbf{classical trusted third party}.
-      \end{alertblock}
+      \uncover<2->{%
+        \begin{alertblock}{1\quad Classical TTP: impossible in general}
+          Quantum fair exchange is impossible in general, even with a
+          \textbf{classical trusted third party}.
+        \end{alertblock}%
+      }
 
     \column{0.475\textwidth}
-      \begin{exampleblock}{2\quad Limited quantum capabilities suffice}
-        A trusted party may use \textbf{quantum states prepared before the
-        exchange}, plus storage.
+      \uncover<3->{%
+        \begin{exampleblock}{2\quad Limited quantum capabilities suffice}
+          A trusted party may use \textbf{quantum states prepared before the
+          exchange}, plus storage.
 
-        \smallskip
-        During the exchange, its only quantum operation is a \textbf{SWAP gate}
-        to move stored states.
-      \end{exampleblock}
+          \smallskip
+          During the exchange, its only quantum operation is a \textbf{SWAP gate}
+          to move stored states.
+        \end{exampleblock}%
+      }
   \end{columns}
 
   \note{
@@ -486,7 +501,7 @@
 % 11--13. Impossibility via a direct cloning reduction
 % -----------------------------------------------------------------------------
 
-\begin{frame}{Impossibility with a Classical Trusted Party}
+\begin{frame}{Our Impossibility Result}
   \centering
   {\large Assume a $T$-round fair-exchange protocol $\Pi$ with a
     \textbf{classical TTP}.\par}
@@ -512,7 +527,7 @@
     \begin{itemize}
       \item Hard-code perfect honest correctness for the talk: $p=1$. The general statement replaces $1/(2T)$ by $p/(2T)$, up to fairness and correctness errors.
       \item The $1/T$ quantity is the cloning attack's success scale, not an upper bound on honest protocol success.
-      \item Operational unclonability means that, from one identified asset, producing two usable versions of that same asset has negligible probability.
+      \item Operational unclonability means that, from one identified input state, producing two usable versions of that same input state has negligible probability.
       \item Textbook deterministic no-cloning alone is not a quantitative security game. BB84 is one concrete witness used by the longer manuscript proof; omit it here.
       \item Alice and Bob may exchange quantum messages. Only the trusted party is restricted to copyable classical state.
       \item Keep the statement informal while the complete model and error parameters are still being finalized.
@@ -520,9 +535,9 @@
   }
 \end{frame}
 
-\begin{frame}{Suppose the Assets Change Hands in Round $t$}
+\begin{frame}{Reduction Intuition}
   \centering
-  {\large For the intuition, suppose one round completes the exchange.\par}
+  {\large Suppose the exchange happens in round $t$.\par}
 
   \vspace{0.45em}
   \begin{tikzpicture}[
@@ -553,7 +568,7 @@
   \note{
     \footnotesize
     \begin{itemize}
-      \item This is explicitly an intuition slide. A general protocol need not send raw asset registers or have one sharp exchange round.
+      \item This is explicitly an intuition slide. A general protocol need not send raw input registers or have one sharp exchange round.
       \item In the sharp cartoon, choosing the exchange round costs probability $1/T$.
       \item Formally, the proof uses same/adjacent stopping experiments and obtains a mismatch of order $1/T$ by averaging. Do not charge a second random-guess loss on top of that.
       \item Keep all of that bookkeeping out of the audience-facing story.
@@ -561,10 +576,10 @@
   }
 \end{frame}
 
-\begin{frame}{Let Only One Direction Through}
+\begin{frame}{The Reduction}
   \centering
-  {\normalsize At round $t^*$, deliver Alice's state to Bob and withhold
-    Bob's state from Alice.\par}
+  {\normalsize At round $t^*$, deliver Alice's message to Bob and withhold
+    Bob's message from Alice.\par}
 
   \vspace{0.20em}
   \begin{tikzpicture}[
@@ -603,10 +618,10 @@
   \note{
     \footnotesize
     \begin{itemize}
-      \item This is the operational cartoon. The arrows need not literally be raw asset registers.
+      \item This is the operational cartoon. The arrows need not literally be raw input registers.
       \item Because the TTP holds only bits, the reduction can copy those bits before round $t^*$ and let the two stopping experiments finish separately.
-      \item If Bob accepts, he has Alice's identified asset. If Alice rejects, asset-preserving fairness must return that same identified asset to her.
-      \item If Alice receives nothing, fairness is already broken. If she receives her asset, the two outputs constitute a clone.
+      \item If Bob accepts, he has Alice's identified input. If Alice rejects, input-preserving fairness must return that same identified input to her.
+      \item If Alice receives nothing, fairness is already broken. If she receives her input back, the two outputs constitute a clone.
       \item Formally, same-cut and adjacent-cut cases show that one of the $T$ locations produces this mismatch with probability $\Omega(1/T)$.
       \item No quantum register is copied as an intermediate step; the contradiction is at the two final outputs.
     \end{itemize}
@@ -617,31 +632,37 @@
 % 14. Transition from the impossibility result to the candidate construction
 % -----------------------------------------------------------------------------
 
-\begin{frame}{What We Show---and What Remains}
+\begin{frame}{Feasibility: What We Show}
   \small
   \begin{columns}[T,onlytextwidth]
     \column{0.61\textwidth}
-      {\large\bfseries\color{QFETeal}Property-based security\par}
-      \vspace{0.45em}
-      {\large\bfseries Correctness\par}
-      \vspace{0.15em}
-      If both parties are honest, they accept and receive each other's states.
+      \uncover<1->{
+        {\large\bfseries\color{QFETeal}Property-based security\par}
+        \vspace{0.45em}
+        {\large\bfseries Correctness\par}
+        \vspace{0.15em}
+        If both parties are honest, they accept and receive each other's states.
+      }
 
-      \vspace{0.85em}
-      {\large\bfseries Asset preservation (soundness)\par}
-      \vspace{0.15em}
-      An honest party leaves with a valid state:
-      \[
-        \begin{aligned}
-          \acclabel&\ \Longrightarrow\ \text{the other party's asset},\\
-          \rejlabel&\ \Longrightarrow\ \text{its own asset}.
-        \end{aligned}
-      \]
+      \uncover<2->{
+        \vspace{0.85em}
+        {\large\bfseries Input-state preservation (soundness)\par}
+        \vspace{0.15em}
+        An honest party leaves with a valid state:
+        \[
+          \begin{aligned}
+            \acclabel&\ \Longrightarrow\ \text{the other party's input},\\
+            \rejlabel&\ \Longrightarrow\ \text{its own input}.
+          \end{aligned}
+        \]
+      }
 
     \column{0.34\textwidth}
-      {\large\bfseries\color{QFEGold!75!black}Still in progress\par}
-      \vspace{0.45em}
-      Composable security.
+      \uncover<3->{
+        {\large\bfseries\color{QFEGold!75!black}Still in progress\par}
+        \vspace{0.45em}
+        Composable security.
+      }
   \end{columns}
 
   \note{
@@ -651,12 +672,90 @@
       \item Formally, both guarantees hold except with negligible probability. On accept, the honest party's output is accepted by the other party's verifier; on reject, it is accepted by its own verifier.
       \item The active manuscript currently contains a proof sketch for these property-based guarantees. Several protocol details and the full proof are still being finalized.
       \item Simulation-based security that composes is future work. Do not claim a particular composable framework yet.
+      \item Transition: what changes when the trusted party can actually hold quantum information? Show the whole construction in two pictures before unpacking the machinery.
     \end{itemize}
   }
 \end{frame}
 
 % -----------------------------------------------------------------------------
-% 15--21. Background
+% 15--16. Protocol sketch: what the background must enable
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Protocol Sketch I: Input Encoding}
+  \centering
+  \begin{tikzpicture}[
+      >={Latex[length=2.6mm]},
+      flow/.style={->,very thick,draw=QFETeal},
+      party/.style={font=\large\bfseries,text=QFEInk},
+      arrowlabel/.style={font=\large,fill=white,inner sep=2pt},
+      function/.style={draw=QFEInk,fill=QFEInk,rounded corners=4pt,
+        minimum width=3.55cm,minimum height=3.00cm,align=center,
+        text=white,font=\large\bfseries}
+    ]
+    \path[use as bounding box] (-5.25,-2.05) rectangle (5.25,2.05);
+    \node[party] at (-4.20,1.58) {Alice};
+    \node[party,align=center] at (4.20,1.58) {Quantum TTP};
+    \node[function] (encoding) at (0,0) {Input\\Encoding};
+    \draw[flow] (-4.75,0.48) --
+      node[arrowlabel,above] {$\qasset{A}$}
+      ([yshift=0.48cm]encoding.west);
+    \draw[flow] ([yshift=-0.48cm]encoding.east) --
+      node[arrowlabel,below] {$\mathsf{TEnc}(\qasset{A})$}
+      (4.75,-0.48);
+  \end{tikzpicture}
+
+  \note{
+    \footnotesize
+    \begin{itemize}
+      \item This is a roadmap, not notation the audience is expected to know yet. For now, read $\mathsf{TEnc}$ as ``protected encoding''; the next background slides unpack it.
+      \item The symbol is deliberately schematic. In the concrete protocol, the TTP holds a QEC-encoded, one-time-padded state; fresh hidden tests are inserted during evaluation rather than stored permanently with it.
+      \item Alice has teleported her unique input into that register and keeps no backup copy.
+      \item The next cartoon asks how Bob can verify that input without ever receiving it unprotected.
+    \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}{Protocol Sketch II: Verified Evaluation}
+  \centering
+  \begin{tikzpicture}[
+      >={Latex[length=2.6mm]},
+      lane/.style={densely dotted,thick,draw=QFEMuted!65},
+      flow/.style={->,very thick,draw=QFETeal}
+    ]
+    \path[use as bounding box] (-5.25,-1.85) rectangle (5.25,1.90);
+    \node[font=\large\bfseries] at (-3.25,1.58) {Quantum TTP};
+    \node[font=\large\bfseries] at (3.25,1.58) {Bob};
+    \node[font=\small,text=QFEMuted] at (-3.25,1.15)
+      {holds $\mathsf{TEnc}(\qasset{A})$};
+    \draw[lane] (-3.25,0.92) -- (-3.25,-1.48);
+    \draw[lane] (3.25,0.92) -- (3.25,-1.48);
+    \draw[flow] (-3.25,0.62) -- (3.25,0.62);
+    \draw[flow] (3.25,0.06) -- (-3.25,0.06);
+    \draw[flow] (-3.25,-0.50) -- (3.25,-0.50);
+    \draw[flow] (3.25,-1.06) -- (-3.25,-1.06);
+    \draw[decorate,decoration={brace,amplitude=5pt},very thick,draw=QFEGold]
+      (4.30,0.86) -- (4.30,-1.30)
+      node[midway,right=7pt,font=\large\bfseries,text=QFEGold!70!black]
+      {$\mathsf{Ver\text{-}Eval}$};
+  \end{tikzpicture}
+
+  \vspace{0.35em}
+  {\large\bfseries
+    Catch a cheating Bob before the encoded state is damaged beyond repair.\par}
+
+  \note{
+    \footnotesize
+    \begin{itemize}
+      \item $\mathsf{Ver\text{-}Eval}$ is only a name for the repeated protected interaction in this roadmap; it is not a standard primitive, and the four arrows are not yet the exact messages.
+      \item The intended effect is to evaluate Alice's public verifier while interleaving checks, so a cheating Bob is caught before accumulated damage exceeds the correction budget.
+      \item The two-party picture is only intuition. The actual checked-gate protocol is three-party: Alice checks Bob's work, and the roles reverse for Bob's input.
+      \item Transition: the sketch asks for error correction, hidden tests, and computation that preserves those tests. Build those ingredients next.
+    \end{itemize}
+  }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 17--23. Background
 % -----------------------------------------------------------------------------
 
 \begin{frame}{Background: Quantum Error Correction}
@@ -707,6 +806,7 @@
   \note{
     \footnotesize
     \begin{itemize}
+      \item This is the first promised ingredient: it makes ``damaged beyond repair'' precise by giving each encoded block a correction budget.
       \item Keep this at the one-idea level: encode one logical qubit into an entangled block of $n$ physical qubits. In the manuscript, $n=\ell_{\mathrm{code}}$.
       \item Emphasize that this is not cloning. No individual physical qubit contains a copy of the unknown input.
       \item The visible slide suppresses code distance and calls the required correction budget $\lambda$. The active fair-exchange draft actually asks for a code correcting a constant multiple of the security parameter.
@@ -716,14 +816,11 @@
   }
 \end{frame}
 
-\begin{frame}{Background: Transversal CNOT}
+\begin{frame}{Transversal operations}
   \small
   \begin{columns}[c,onlytextwidth]
     \column{0.65\textwidth}
       \centering
-      {\large\bfseries For the code we use, apply CNOT between matching
-        positions.\par}
-      \vspace{0.35em}
       \begin{tikzpicture}[
           qubit/.style={draw=QFETeal!65,fill=QFEPale,circle,
             minimum size=0.47cm,inner sep=0pt},
@@ -811,8 +908,8 @@
       node[midway,above=2pt,font=\small,fill=white,inner sep=1pt]
       {returned state $\ket{\widetilde\psi'}$};
     \node[anchor=east,align=right,font=\small] at (-3.35,-1.02)
-      {$\rejlabel\ \text{or}\ \ket{\psi_{\mathrm{out}}}$\\[-0.1em]
-       $\leftarrow\mathsf{VerDec}_k(\ket{\widetilde\psi'})$};
+      {$\mathsf{VerDec}_k(\ket{\widetilde\psi'})$\\[-0.1em]
+       $\mapsto\ \ket{\psi_{\mathrm{out}}}\ \text{or}\ \rejlabel$};
   \end{tikzpicture}
 
   \vspace{0.20em}
@@ -820,13 +917,10 @@
     \mathsf{Accept}\quad\Longrightarrow\quad
     \ket{\psi_{\mathrm{out}}}\approx\ket\psi.
   \]
-  \vspace{-0.20em}
-  {\small\color{QFEMuted}
-    The attacker may always force rejection.\par}
-
   \note{
     \footnotesize
     \begin{itemize}
+      \item This is the detection ingredient behind the checks in $\mathsf{Ver\text{-}Eval}$: QEC repairs bounded damage, while authentication detects tampering.
       \item This is the integrity game. The visible slide uses pure states throughout for the audience; a full definition also preserves entanglement with an external reference system.
       \item The attacker can always destroy the authenticated state and force rejection. Authentication prevents an undetected change.
       \item The authenticating key also commonly hides the plaintext, but privacy is not the conceptual point of this slide.
@@ -864,7 +958,7 @@
       \vspace{0.4em}
       \begin{enumerate}
         \item Undo $X^xZ^z$, then $\pi$.
-        \item Measure the $0$-traps in $Z$ and the $+$-traps in $X$.
+        \item Measure and check the $\ket{0^n}$ and $\ket{+^n}$ traps.
         \item If any test fails: $\rejlabel$.
         \item Otherwise: return $\mathsf{QDec}(\text{data})$.
       \end{enumerate}
@@ -873,6 +967,7 @@
   \note{
     \scriptsize
     \begin{itemize}
+      \item This unpacks the trap-code picture behind the $\mathsf{TEnc}$ shorthand, but remember that our TTP does not keep this full ciphertext at rest.
       \item This is the standard one-block trap-code authentication construction. $S_{3n}$ is the symmetric group and $X^xZ^z$ is a uniformly random $3n$-qubit Pauli pad.
       \item For several plaintext qubits, reuse the same permutation $\pi$ and sample an independent Pauli pad for each block.
       \item Undo the pad and permutation; measure $0$-traps in the computational basis and $+$-traps in the Hadamard basis; decode only if all tests pass.
@@ -885,10 +980,7 @@
 
 \begin{frame}{Background: VQFHE}
   \centering
-  {\small\bfseries
-    VQFHE $=$ verifiable quantum fully homomorphic encryption.\par}
-
-  \vspace{0.15em}
+  \vspace{0.10em}
   \begin{tikzpicture}[
       >={Latex[length=2.6mm]},
       lane/.style={densely dotted,thick,draw=QFEMuted!65},
@@ -902,36 +994,36 @@
 
     \node[anchor=east,align=right,font=\small] at (-3.35,0.78)
       {$\begin{aligned}
-        (\mathsf{pk},\mathsf{sk},\mathsf{evk})&\leftarrow\mathsf{KeyGen}\\[-0.15em]
-        \mathsf{ct}&\leftarrow\mathsf{Enc}_{\mathsf{pk}}(\ket x)
+        (\mathsf{pk},\mathsf{sk})&\leftarrow\mathsf{KeyGen}\\[-0.15em]
+        \ket{\widetilde\phi}&\leftarrow
+          \mathsf{Enc}_{\mathsf{pk}}(\ket\phi)
       \end{aligned}$};
     \draw[qmsg] (-3.1,0.28) -- (3.1,0.28)
       node[midway,above=2pt,font=\small,fill=white,inner sep=1pt]
-      {$\bigl(\mathsf{ct},\mathsf{evk},C\bigr)$};
+      {$\bigl(\ket{\widetilde\phi},C\bigr)$};
     \node[anchor=west,align=left,font=\small] at (3.35,-0.05)
-      {$\bigl(\widetilde{\mathsf{ct}},\mathsf{log}\bigr)$\\[-0.1em]
-       $\leftarrow\mathsf{Eval}_{\mathsf{evk}}(C,\mathsf{ct})$};
+      {$\ket{\widetilde\psi}\leftarrow
+        \mathsf{Eval}_{\mathsf{pk}}(C,\ket{\widetilde\phi})$};
     \draw[qmsg] (3.1,-0.52) -- (-3.1,-0.52)
       node[midway,above=2pt,font=\small,fill=white,inner sep=1pt]
-      {$\bigl(\widetilde{\mathsf{ct}},\mathsf{log}\bigr)$};
+      {$\ket{\widetilde\psi}$};
     \node[anchor=east,align=right,font=\small] at (-3.35,-1.02)
-      {$\rejlabel\ \text{or}\ \ket y$\\[-0.1em]
-       $\leftarrow\mathsf{VerDec}_{\mathsf{sk}}
-         (C,\widetilde{\mathsf{ct}},\mathsf{log})$};
+      {$\mathsf{VerDec}_{\mathsf{sk}}(\ket{\widetilde\psi})$\\[-0.1em]
+       $\mapsto\ \ket\psi\ \text{or}\ \rejlabel$};
   \end{tikzpicture}
 
   \vspace{0.45em}
   {\large
     $\displaystyle
-      \text{honest server: }\ket y=C\ket x,
-      \qquad
-      \text{malicious server: }\rejlabel\ \text{or}\
-        \ket y\approx C\ket x.$\par}
+      \mathsf{Accept}\quad\Longrightarrow\quad
+      \ket\psi\approx C\ket\phi.$\par}
 
   \note{
     \footnotesize
     \begin{itemize}
-      \item This is the security interface, separated from the concrete CNOT mechanism on the next slide.
+      \item This is the abstraction behind the $\mathsf{Ver\text{-}Eval}$ roadmap label: compute on a protected state and accept only a certified result.
+      \item This is a deliberately simplified public-key interface, separated from the concrete CNOT mechanism on the next slide.
+      \item In the full VQFHE syntax, an evaluation key and a computation log may appear separately. Here the evaluation key is folded into $\mathsf{pk}$, and the log into the returned $\ket{\widetilde\psi}$.
       \item The visible pure-state equation is the unitary cartoon. For a general circuit, write $\rho_{\mathrm{out}}\approx\Phi_C(\rho)$ and preserve entanglement with an external reference.
       \item A malicious server may always force rejection. Acceptance certifies the requested computation, up to negligible error.
       \item Privacy is a separate part of the definition: the evaluator should not learn the plaintext.
@@ -941,8 +1033,8 @@
 
 \begin{frame}{Background: Homomorphic CNOT}
   \centering
-  {\small Two trap-code ciphertexts use the \textbf{same hidden shuffle}
-    $\pi$, but \textbf{independent one-time pads}.\par}
+  {\small Both ciphertexts use the \textbf{same hidden permutation} $\pi$
+    and \textbf{independent one-time pads}.\par}
 
   \vspace{0.35em}
   \begin{tikzpicture}[
@@ -952,14 +1044,14 @@
         minimum size=0.30cm,inner sep=0pt}
     ]
     \node[font=\small\bfseries,anchor=east] at (-4.05,0.72)
-      {$\widetilde\sigma_{\psi}$};
+      {$\ket{\widetilde\psi}$};
     \node[font=\small\bfseries,anchor=east] at (-4.05,-0.72)
-      {$\widetilde\sigma_{\phi}$};
+      {$\ket{\widetilde\phi}$};
 
     \foreach \x/\fillcolor in {
-      -3.65/QFEGoldPale,-2.80/QFEPale,-1.95/QFECoralPale,
-      -1.10/QFECoralPale,-0.25/QFEGoldPale,0.60/QFEPale,
-      1.45/QFECoralPale,2.30/QFEPale,3.15/QFEGoldPale} {
+      -3.65/QFECoralPale,-2.80/QFEPale,-1.95/QFECoralPale,
+      -1.10/QFECoralPale,-0.25/QFECoralPale,0.60/QFEPale,
+      1.45/QFECoralPale,2.30/QFEPale,3.15/QFECoralPale} {
       \node[cell,fill=\fillcolor] at (\x,0.72) {};
       \node[cell,fill=\fillcolor] at (\x,-0.72) {};
       \fill[QFEInk] (\x,0.72) circle (2.0pt);
@@ -973,26 +1065,14 @@
         text=QFEGold!75!black] {apply $\mathsf{CNOT}^{\otimes 3n}$};
   \end{tikzpicture}
 
-  \vspace{0.35em}
+  \vspace{0.55em}
   {\small
     $\displaystyle
-      \bigl(\widetilde\sigma'_{\psi},\widetilde\sigma'_{\phi}\bigr)
+      \bigl(\ket{\widetilde\psi'},\ket{\widetilde\phi'}\bigr)
       \leftarrow
       \mathsf{CNOT}^{\otimes 3n}
-      \bigl(\widetilde\sigma_{\psi},\widetilde\sigma_{\phi}\bigr).$
+      \bigl(\ket{\widetilde\psi},\ket{\widetilde\phi}\bigr).$
     \par}
-
-  \vspace{0.25em}
-  {\small Encrypted pad keys are updated by XOR:
-    \[
-      (\widehat x_1,\widehat z_1,\widehat x_2,\widehat z_2)
-      \longmapsto
-      (\widehat x_1,
-       \widehat z_1\mathbin\oplus\widehat z_2,
-       \widehat x_1\mathbin\oplus\widehat x_2,
-       \widehat z_2).
-    \]
-  }
 
   \note{
     \footnotesize
@@ -1000,14 +1080,13 @@
       \item This construction visually echoes the transversal-CNOT slide: apply one physical CNOT between every pair of corresponding encrypted positions.
       \item The identical color pattern is only an explanatory view. The evaluator does not know which positions are encoded data, $0$-tests, or $+$-tests.
       \item Both ciphertext blocks share the same secret permutation $\pi$ so that corresponding types line up, but their Pauli pads are sampled independently.
-      \item Hats denote classical homomorphic encryptions of the pad keys. The evaluator computes the four XOR expressions under the classical encryption scheme.
-      \item For the first block as control, the exact Pauli-key rule is $(x_1,z_1,x_2,z_2)\mapsto(x_1,z_1\oplus z_2,x_1\oplus x_2,z_2)$.
+      \item For the first block as control, the hidden Pauli keys update as $(x_1,z_1,x_2,z_2)\mapsto(x_1,z_1\oplus z_2,x_1\oplus x_2,z_2)$. Keep that analysis off the visible construction slide.
     \end{itemize}
   }
 \end{frame}
 
-\begin{frame}{Background: Why Homomorphic CNOT Works}
-  \small
+\begin{frame}{Background: Homomorphic CNOT Analysis}
+  \footnotesize
   \begin{align*}
     \mathsf{TEnc}_{\pi,Q_1}(\ket\psi)
       &=Q_1\,\pi\!\left(
@@ -1023,114 +1102,41 @@
   {\footnotesize Same $\pi$; independently random $Q_1,Q_2$.\par}
 
   \vspace{0.30em}
-  Let $U_r:=\mathsf{CNOT}^{\otimes r}$. Then:
-  \begin{align*}
-    U_{3n}(\pi\otimes\pi)
-      &=(\pi\otimes\pi)U_{3n}
-      &&\text{same positions},\\
-    U_{3n}(Q_1\otimes Q_2)
-      &=(Q'_1\otimes Q'_2)U_{3n}
-      &&\text{new pad keys},\\
-    U_n\,\mathsf{QEnc}^{\otimes2}
-      &=\mathsf{QEnc}^{\otimes2}\mathsf{CNOT}
-      &&\text{logical CNOT},\\
-    \mathsf{CNOT}\ket{00}=\ket{00},\qquad
-    \mathsf{CNOT}\ket{++}=\ket{++}
-      &&&\text{tests unchanged}.
-  \end{align*}
+  \renewcommand{\arraystretch}{1.20}
+  \begin{tabularx}{0.97\textwidth}{@{}>{\bfseries}p{0.20\textwidth}X@{}}
+    \uncover<2->{new pad keys} &
+      \uncover<2->{$\mathsf{CNOT}^{\otimes3n}(Q_1\otimes Q_2)
+       =(Q'_1\otimes Q'_2)\mathsf{CNOT}^{\otimes3n}$}\\
+    \uncover<3->{same permutation} &
+      \uncover<3->{$\mathsf{CNOT}^{\otimes3n}(\pi\otimes\pi)
+       =(\pi\otimes\pi)\mathsf{CNOT}^{\otimes3n}$}\\
+    \uncover<4->{logical CNOT} &
+      \uncover<4->{$\mathsf{CNOT}^{\otimes n}\mathsf{QEnc}^{\otimes2}
+       =\mathsf{QEnc}^{\otimes2}\mathsf{CNOT}$}\\
+    \uncover<5->{tests unchanged} &
+      \uncover<5->{$\mathsf{CNOT}\ket{00}=\ket{00}$,
+      \quad $\mathsf{CNOT}\ket{++}=\ket{++}$}
+  \end{tabularx}
 
   \vspace{0.15em}
-  {\small Universality requires a substantially more involved construction
-    \cite{alagic-et-al-vqfhe}.\par}
+  \uncover<6->{%
+    {\small Universality gets tricky \cite{alagic-et-al-vqfhe}.\par}%
+  }
 
   \note{
     \footnotesize
     \begin{itemize}
-      \item This slide is the analysis of the preceding construction. Read it from top to bottom: shuffle, pad, data, tests.
-      \item $Q'_1\otimes Q'_2$ is defined by conjugating the original two-block Pauli through $U_{3n}$, so the second identity is exact up to the irrelevant Pauli phase.
-      \item The first identity is why the two trap-code ciphertexts must share a permutation. Independent permutations would pair data positions with unknown trap types.
+      \item This slide is the analysis of the preceding construction. Read it from top to bottom in the same order as $Q\pi(\cdot)$: pad, permutation, data, tests.
+      \item $Q'_1\otimes Q'_2$ is defined by conjugating the original two-block Pauli through $\mathsf{CNOT}^{\otimes3n}$, so the first identity is exact up to the irrelevant Pauli phase.
+      \item The second identity is why the two trap-code ciphertexts must share a permutation. Independent permutations would pair data positions with unknown trap types.
       \item CNOT is a clean example, but universality in the cited VQFHE construction is the technically difficult part.
+      \item Transition: that was the toolkit. Now instantiate the two idealized protocol pictures, beginning with teleporting the input to the TTP.
     \end{itemize}
   }
 \end{frame}
 
 % -----------------------------------------------------------------------------
-% 22. Conceptual bridge from VQFHE to the construction
-% -----------------------------------------------------------------------------
-
-\begin{frame}{Core Idea: Verify Before Release}
-  \centering
-  {\normalsize The quantum TTP keeps the encoded asset while its verification
-    circuit runs.\par}
-
-  \vspace{0.45em}
-  \begin{tikzpicture}[
-      >={Latex[length=2.6mm]},
-      flow/.style={->,very thick,draw=QFETeal},
-      ttp/.style={draw=QFEInk,fill=QFEInk,rounded corners=4pt,text=white,
-        minimum width=4.25cm,minimum height=1.05cm,align=center,font=\small}
-    ]
-    \node[font=\small\bfseries,text=QFEMuted,anchor=west] at (-5.45,1.38)
-      {1\quad Input encoding};
-    \node[font=\large\bfseries] (alice) at (-4.15,0.62) {Alice: $\qasset{A}$};
-    \node[ttp] (ttp) at (1.30,0.62)
-      {Quantum TTP\\holds $Q\,\mathsf{QEnc}(\qasset{A})$};
-    \draw[flow] (alice.east) -- (ttp.west)
-      node[midway,above=2pt,font=\small,fill=white,inner sep=1pt]
-      {teleport; QEC $+$ pad};
-  \end{tikzpicture}
-
-  \vspace{0.25em}
-  {\large\bfseries
-    2\quad Evaluate $\mathsf{Ver}_A=g_T\cdots g_1$ one step at a time.\par}
-
-  \vspace{0.35em}
-  \begin{tikzpicture}[
-      >={Latex[length=2.3mm]},
-      flow/.style={->,very thick,draw=QFEMuted},
-      gate/.style={draw=QFEInk,fill=QFEInk,rounded corners=2pt,text=white,
-        minimum width=0.82cm,minimum height=0.62cm,font=\bfseries},
-      test/.style={draw=QFETeal,fill=QFEPale,circle,very thick,
-        minimum size=0.66cm,font=\bfseries,text=QFETeal}
-    ]
-    \node[gate] (g1) at (-4.45,0) {$g_1$};
-    \node[test] (c1) at (-2.75,0) {$\checkmark$};
-    \node[gate] (g2) at (-1.05,0) {$g_2$};
-    \node[test] (c2) at (0.65,0) {$\checkmark$};
-    \node[font=\Large\bfseries,text=QFEMuted] (dots) at (2.05,0) {$\cdots$};
-    \node[gate] (gt) at (3.35,0) {$g_T$};
-    \node[test] (ct) at (5.05,0) {$\checkmark$};
-    \draw[flow] (g1) -- (c1);
-    \draw[flow] (c1) -- (g2);
-    \draw[flow] (g2) -- (c2);
-    \draw[flow] (c2) -- (dots);
-    \draw[flow] (dots) -- (gt);
-    \draw[flow] (gt) -- (ct);
-    \draw[decorate,decoration={brace,mirror,amplitude=4pt},very thick,
-      draw=QFEGold] (-3.18,-0.55) -- (5.48,-0.55)
-      node[midway,below=5pt,font=\small\bfseries,text=QFEGold!70!black]
-      {fresh hidden tests after every step};
-  \end{tikzpicture}
-
-  \vspace{0.35em}
-  {\large\bfseries\color{QFETeal}
-    If a test fails, stop while QEC can still repair the damage.\par}
-
-  \note{
-    \footnotesize
-    \begin{itemize}
-      \item At ten thousand feet, the construction is VQFHE-shaped: encode the state, evaluate its public verifier without releasing the asset, and verify the computation.
-      \item The notation $Q\,\mathsf{QEnc}(\qasset{A})$ is intentional. At this stage the TTP holds a QEC-encoded, one-time-padded state, not a persistent standard trap-code ciphertext.
-      \item For Alice's asset, Bob performs the public verification computation and Alice cross-checks him; the roles reverse for Bob's asset.
-      \item The important change from one final check is that fresh hidden tests accompany every gate and measurement. The intended guarantee is to detect an attack while accumulated errors remain within the QEC correction budget.
-      \item The following slides zoom into the two ingredients shown here: input encoding, then checked gate-by-gate evaluation.
-      \item Only after both verification computations finish does the TTP decide whether to exchange or return the assets.
-    \end{itemize}
-  }
-\end{frame}
-
-% -----------------------------------------------------------------------------
-% 23--29. Candidate construction and resource boundary
+% 24--29. Candidate construction and resource boundary
 % -----------------------------------------------------------------------------
 
 \begin{frame}{Construction I: Teleport to the TTP}
@@ -1138,187 +1144,146 @@
   \begin{tikzpicture}[
       >={Latex[length=2.6mm]},
       qmsg/.style={->,very thick,draw=QFETeal},
-      cmsg/.style={->,very thick,dashed,draw=QFEMuted},
-      vault/.style={draw=QFEInk,fill=QFEInk,rounded corners=4pt,
-        minimum width=3.15cm,minimum height=0.82cm,align=center,text=white,font=\scriptsize}
+      cmsg/.style={->,very thick,dashed,draw=QFEMuted}
     ]
-    \path[use as bounding box] (-5.55,-2.28) rectangle (5.65,2.28);
-    \node[font=\large\bfseries] at (-3.55,2.00) {Alice};
-    \node[font=\large\bfseries] at (3.25,2.00) {Quantum TTP};
+    \path[use as bounding box] (-5.40,-1.92) rectangle (5.40,2.00);
+    \node[font=\large\bfseries] at (-3.35,1.70) {Alice};
+    \node[font=\large\bfseries] at (3.35,1.70) {Quantum TTP};
 
-    \node[font=\scriptsize,align=center,text width=3.05cm] at (3.25,1.18)
-      {prepare entangled pair\\encode and pad one half};
-    \draw[qmsg] (2.55,0.55) -- (-2.85,0.55)
+    \node[font=\large,align=center] at (3.35,0.98)
+      {$\bigl(I\otimes\mathsf{TEnc}\bigr)\ket{\mathrm{EPR}}$};
+    \draw[qmsg] (3.05,0.42) -- (-3.05,0.42)
       node[midway,above=2pt,font=\small,fill=white,inner sep=1pt]
-      {one half, $L_i$};
-    \node[font=\small,align=center,text width=3.25cm] at (-3.55,-0.10)
-      {Bell measurement\\$\ket{\psi_i},L_i\longrightarrow P_i$};
-    \draw[cmsg] (-2.85,-0.78) -- (2.55,-0.78)
-      node[midway,above=2pt,font=\small,fill=white,inner sep=1pt]
-      {classical Bell outcome $P_i$};
-    \node[vault] (vault) at (3.25,-1.50)
-      {$[\,\ket{\widetilde\psi_i}\mid Q_i^0\,]$\\[-0.1em]
-       $Q_i^0=Q_i^{\mathrm{init}}\overline P_i$};
-
-    \draw[decorate,decoration={brace,amplitude=5pt},very thick,draw=QFEGold]
-      (5.15,1.62) -- (5.15,-1.95)
-      node[midway,right=6pt,text=QFEGold!70!black,font=\scriptsize\bfseries,align=left]
-      {repeat for each\\input qubit $i$};
+      {one half};
+    \node[font=\large] at (-3.35,-0.18) {$\qasset{A}$};
+    \draw[cmsg] (-3.05,-0.72) -- (3.05,-0.72)
+      node[midway,above=3pt,font=\small,fill=white,inner sep=1pt]
+      {$\mathsf{teleport}(\qasset{A})$};
+    \node[font=\large\bfseries,text=QFETeal] at (3.35,-1.42)
+      {$\mathsf{TEnc}(\qasset{A})$};
   \end{tikzpicture}
 
   \note{
     \footnotesize
     \begin{itemize}
+      \item Back from the background: this realizes Protocol Sketch~I.
       \item The manuscript calls this input commitment; for the talk, simply say that Alice teleports the state to the TTP. It is not a bit-commitment primitive.
-      \item This frame is only the construction. Save the interpretation of the final TTP-held state for the next frame.
-      \item Encoded EPR resources can be prepared before the exchange. During the exchange, the TTP routes $L_i$ and updates a classical Pauli key after receiving $P_i$.
+      \item The visible $\mathsf{TEnc}$ notation intentionally suppresses the classical teleportation correction and the at-rest QEC-plus-pad distinction.
+      \item More precisely, for each teleported input qubit, if the correction is $P_i$, the retained QEC block has pad key $Q_i^0=Q_i^{\mathrm{init}}\overline P_i$. There is no trap permutation in the at-rest state.
+      \item Encoded entangled pairs can be prepared before the exchange. During the exchange, the TTP sends one half and updates only a classical one-time-pad key after Alice's teleportation measurement.
       \item Teleportation preserves entanglement with an external reference system.
+      \item Next: realize $\mathsf{Ver\text{-}Eval}$ one checked gate at a time.
     \end{itemize}
   }
 \end{frame}
 
-\begin{frame}{Construction I: What the TTP Holds}
-  \centering
-  \vspace{0.15em}
-  \begin{tikzpicture}
-    \node[draw=QFEInk,fill=QFEInk,text=white,rounded corners=5pt,
-      minimum width=7.5cm,minimum height=1.55cm,align=center] (vault) {
-      \large\bfseries Quantum TTP stores\\[0.15em]
-      $\displaystyle
-        \bigl(\ket{\widetilde\psi},Q^0\bigr),\qquad
-        \ket{\widetilde\psi}
-          =Q^0\,\mathsf{QEnc}(\ket\psi)$
-    };
-  \end{tikzpicture}
-
-  \vspace{0.8em}
-  \begin{tabularx}{0.93\textwidth}{@{}>{\centering\arraybackslash}p{0.08\textwidth}X@{}}
-    {\Large\color{QFETeal}$\checkmark$} &
-      The TTP holds the \textbf{encoded state and its one-time-pad key}.\\[0.65em]
-    {\Large\color{QFECoral}$\times$} &
-      Alice retains \textbf{no backup copy} of the teleported input.\\[0.65em]
-    {\Large\color{QFEGold!80!black}$\diamond$} &
-      This is QEC $+$ a quantum one-time pad. \textbf{Fresh hidden tests}
-      are inserted only when a gate is evaluated.
-  \end{tabularx}
-
-  \note{
-    \footnotesize
-    \begin{itemize}
-      \item This is the interpretation separated from the preceding construction diagram.
-      \item Operationally, the TTP ends with a fixed encrypted codeword that Alice can no longer modify or duplicate.
-      \item Alice did not send a register carrying $\ket\psi$ directly to the TTP. Teleportation placed the state in the already encoded and padded retained half of the entangled pair.
-      \item The stored state is not a persistent standard trap-code ciphertext and is not yet authenticated by traps. Integrity comes from fresh checks during each operation.
-    \end{itemize}
-  }
-\end{frame}
-
-\begin{frame}{Construction II: Bob Applies a Gate}
-  \centering
-  {\small For position $j$, let $G:=g^{(j)}$ and let $\ket{D_j}$ be the
-    encrypted data.\par}
-
-  \vspace{0.25em}
-  {\small
-    $\ket{E_0}=X^e\ket{0^w}$,\qquad
-    $\ket{E_+}=Z^f\ket{+^w}$.
-    The TTP secretly shuffles these three states and chooses new pad keys
-    $Q',P'_0,P'_+$.\par}
-
-  \vspace{0.35em}
+% The two Construction-II frames deliberately share one fixed-coordinate
+% diagram.  The second is a visual diff: only the coral re-encryption terms
+% change.
+\newcommand{\checkedgatediagram}[5]{%
   \begin{tikzpicture}[
       >={Latex[length=2.7mm]},
       lane/.style={densely dotted,thick,draw=QFEMuted!65},
-      qmsg/.style={->,very thick,draw=QFETeal}
-    ]
-    \path[use as bounding box] (-5.35,-1.62) rectangle (5.35,1.60);
-    \node[font=\large\bfseries] at (-3.65,1.35) {Quantum TTP};
-    \node[font=\large\bfseries] at (3.65,1.35) {Bob};
-    \node[font=\scriptsize\bfseries,text=QFEMuted] at (3.65,1.05) {applies gate};
-    \draw[lane] (-3.65,0.88) -- (-3.65,-1.42);
-    \draw[lane] (3.65,0.88) -- (3.65,-1.42);
-
-    \draw[qmsg] (-3.65,0.05) -- (3.65,0.05)
-      node[midway,above=3pt,font=\small,fill=white,inner sep=1pt,align=center]
-      {quantum: $\pi_E(\ket{D_j},\ket{E_0},\ket{E_+})$\\
-       classical: $\pi_E(Q',P'_0,P'_+)$};
-    \draw[qmsg] (3.65,-0.92) -- (-3.65,-0.92)
-      node[midway,above=3pt,font=\small,fill=white,inner sep=1pt,align=center]
-      {$\pi_E\!\left(Q'G\ket{D_j},\,
-        P'_0G\ket{E_0},\,P'_+G\ket{E_+}\right)$};
-
-    \draw[decorate,decoration={brace,amplitude=5pt},very thick,draw=QFEGold]
-      (4.65,0.56) -- (4.65,-1.30)
-      node[midway,right=6pt,text=QFEGold!70!black,font=\scriptsize\bfseries,align=left]
-      {repeat\\$j=1,\ldots,n$};
-  \end{tikzpicture}
-
-  \vspace{0.2em}
-  {\large\bfseries\color{QFETeal}
-    The hidden shuffle forces Bob to treat data and both tests alike.\par}
-
-  \note{
-    \footnotesize
-    \begin{itemize}
-      \item The visible pure-state notation is a talk-level purification shorthand. The data column $D_j$ may be entangled with the other columns and an external reference.
-      \item Here $w$ is the width of one column and $e,f\in\{0,1\}^w$. The three fresh Paulis lie in $\mathcal P^{\otimes w}$.
-      \item Bob receives the three Pauli instructions in the same secret order as the data and tests. He therefore applies $Q'G$, $P'_0G$, and $P'_+G$ to the correct anonymous registers without learning which is data.
-      \item The active manuscript repeats over $j\in[\ell_{\mathrm{code}}]$, not $j\in[3\lambda]$. There are three evaluator registers per coordinate.
-    \end{itemize}
-  }
-\end{frame}
-
-\begin{frame}{Construction II: Alice Checks the Result}
-  \centering
-  {\small The TTP undoes its shuffle, keeps $Q'G\ket{D_j}$, and prepares new
-    tests with known outcomes:\par}
-
-  \vspace{0.12em}
-  {\small
-    $\ket{V_0}=GX^u\ket{0^w}$,
-    \qquad
-    $\ket{V_+}=GZ^v\ket{+^w}$.\par}
-
-  \vspace{0.22em}
-  \begin{tikzpicture}[
-      >={Latex[length=2.7mm]},
-      lane/.style={densely dotted,thick,draw=QFEMuted!65},
+      qmsg/.style={->,very thick,draw=QFETeal},
       trapmsg/.style={->,very thick,draw=QFEGold!85!black},
       cmsg/.style={->,very thick,dashed,draw=QFEMuted}
     ]
-    \path[use as bounding box] (-5.35,-1.72) rectangle (5.35,1.60);
-    \node[font=\large\bfseries] at (-3.65,1.35) {Alice};
-    \node[font=\scriptsize\bfseries,text=QFEMuted] at (-3.65,1.05) {checks result};
-    \node[font=\large\bfseries] at (3.65,1.35) {Quantum TTP};
-    \draw[lane] (-3.65,0.88) -- (-3.65,-1.52);
-    \draw[lane] (3.65,0.88) -- (3.65,-1.52);
+    \path[use as bounding box] (-5.70,-2.50) rectangle (5.70,1.68);
+    \node[font=\large\bfseries] at (-4.75,1.42) {Alice};
+    \node[font=\large\bfseries] at (0.25,1.42) {TTP};
+    \node[font=\large\bfseries] at (4.15,1.42) {Bob};
+    \draw[lane] (-4.75,1.12) -- (-4.75,-2.24);
+    \draw[lane] (0.25,1.12) -- (0.25,-1.98);
+    \draw[lane] (4.15,1.12) -- (4.15,-2.24);
 
-    \draw[trapmsg] (3.65,0.12) -- (-3.65,0.12)
-      node[midway,above=3pt,font=\small,fill=white,inner sep=1pt,align=center]
-      {$\ket{T_0}=\pi_0(P'_0G\ket{E_0},\ket{V_0})$\\
-       $\ket{T_+}=\pi_+(P'_+G\ket{E_+},\ket{V_+})$};
-    \draw[cmsg] (-3.65,-1.25) -- (3.65,-1.25)
-      node[midway,above=3pt,font=\small,fill=white,inner sep=1pt,align=center]
-      {$o_0\leftarrow\mathsf{Meas}_Z((G^\dagger)^{\otimes2}\ket{T_0})$\\
+    \draw[qmsg] (0.25,0.66) -- (4.15,0.66)
+      node[pos=0.58,above=3pt,font=\small,fill=white,inner sep=1pt]
+      {#1};
+    \draw[qmsg] (4.15,-0.02) -- (0.25,-0.02)
+      node[midway,above=2pt,font=\small,fill=white,inner sep=1pt]
+      {#2};
+    \draw[trapmsg] (0.25,-0.78) -- (-4.75,-0.78)
+      node[midway,above=3pt,font=\scriptsize,fill=white,inner sep=1pt,align=center]
+      {#3\\[-0.1em]#4};
+    \draw[cmsg] (-4.75,-1.84) -- (0.25,-1.84)
+      node[midway,above=2pt,font=\scriptsize,fill=white,inner sep=1pt,align=center]
+      {$o_0\leftarrow\mathsf{Meas}_Z((G^\dagger)^{\otimes2}\ket{T_0})$\\[-0.1em]
        $o_+\leftarrow\mathsf{Meas}_X((G^\dagger)^{\otimes2}\ket{T_+})$};
+    \node[font=\scriptsize,align=center] at (0.25,-2.27) {#5};
 
     \draw[decorate,decoration={brace,amplitude=5pt},very thick,draw=QFEGold]
-      (4.65,0.58) -- (4.65,-1.48)
+      (5.12,0.88) -- (5.12,-2.12)
       node[midway,right=6pt,text=QFEGold!70!black,font=\scriptsize\bfseries,align=left]
-      {repeat\\$j=1,\ldots,n$};
+      {repeat for\\$j=1,\ldots,n$};
   \end{tikzpicture}
+}
 
-  \vspace{0.15em}
-  {\small The TTP accepts only the expected test results. If they match,
-    it updates the one-time-pad key to $Q_{\mathrm{new}}=Q'GQG^\dagger$.\par}
+\begin{frame}{Construction II: One Checked Gate}
+  \centering
+  {\scriptsize
+    $G:=g^{(j)}$,\quad
+    $\ket W:=\pi_E\bigl(\ket{D_j},X^e\ket{0^w},Z^f\ket{+^w}\bigr)$,
+    \\[-0.05em]
+    {\vphantom{$\pi_E^{-1}R\pi_E
+      =R_D\otimes R_0\otimes R_+,\quad
+      G^\dagger R_sG=X^{a_s}Z^{b_s}$}%
+      \phantom{without re-encryption.}}
+    \par}
+
+  \vspace{0.08em}
+  \checkedgatediagram
+    {$\ket W$}
+    {$G^{\otimes3}\ket W$}
+    {$\ket{T_0}=\pi_0(G X^e\ket{0^w},\,G X^u\ket{0^w})$}
+    {$\ket{T_+}=\pi_+(G Z^f\ket{+^w},\,G Z^v\ket{+^w})$}
+    {check the trap outcomes $o_0,o_+$;\\[-0.1em]
+      keep $G\ket{D_j}$}
 
   \note{
-    \footnotesize
+    \scriptsize
     \begin{itemize}
-      \item Here $u,v\in\{0,1\}^w$ and $\pi_0,\pi_+\in S_2$ are fresh. Alice receives each returned test mixed with a fresh known gate-output test.
+      \setlength{\itemsep}{0pt}
+      \item This is the warm-up version with no fresh re-encryption. It isolates the four-message check; the next frame adds the missing security layer without moving anything.
+      \item This is one complete per-coordinate interaction. The TTP checks Alice's reported outcomes before advancing to $j+1$; Bob never touches all coordinates before a check occurs.
+      \item The visible pure-state notation is a talk-level purification shorthand. The data column $D_j$ may be entangled with the other columns and an external reference.
+      \item Here $e,f,u,v\in\{0,1\}^w$ and $\pi_0,\pi_+\in S_2$ are fresh. Alice receives each returned test mixed with a fresh test of a known gate output.
       \item Alice applies $G^\dagger$ to both registers in each pair and measures the $0$-pair in the $Z$ basis and the $+$-pair in the $X$ basis.
-      \item Write $G^\dagger P'_0G=X^{a_0}Z^{b_0}$ and $G^\dagger P'_+G=X^{a_+}Z^{b_+}$. The exact checks are $\pi_0^{-1}(o_0)=(a_0\oplus e,u)$ and $\pi_+^{-1}(o_+)=(b_+\oplus f,v)$.
-      \item The fresh outputs catch a lying checker; discrepancies in the returned tests count against Bob. QEC is intended to absorb the bounded number of corrupted coordinates before evaluator replacement.
+      \item In an honest execution, undoing $G$ makes the old and fresh traps yield exactly $(e,u)$ and $(f,v)$. Under attack, $G\ket{D_j}$ denotes the honest value of the first register retained after the TTP undoes $\pi_E$.
+      \item If the current data pad is $Q$, the corresponding key update in this warm-up is $Q_{\mathrm{new}}=GQG^\dagger$.
+      \item This warm-up alone is not the final secure construction: without fresh Pauli re-encryption, correlations can persist between calls.
+    \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}{Construction II: Add Re-encryption}
+  \centering
+  {\scriptsize
+    $G:=g^{(j)}$,\quad
+    $\ket W:=\pi_E\bigl(\ket{D_j},X^e\ket{0^w},Z^f\ket{+^w}\bigr)$,
+    \\[-0.05em]
+    $\reenc{R\leftarrow\text{fresh Pauli}}$.
+    \par}
+
+  \vspace{0.08em}
+  \checkedgatediagram
+    {$\bigl(\ket W,\reenc{R}\bigr)$}
+    {$\reenc{R}\,G^{\otimes3}\ket W$}
+    {$\ket{T_0}=\pi_0(\reenc{R_0}G X^e\ket{0^w},\,G X^u\ket{0^w})$}
+    {$\ket{T_+}=\pi_+(\reenc{R_+}G Z^f\ket{+^w},\,G Z^v\ket{+^w})$}
+    {check the trap outcomes $o_0,o_+$;\\[-0.1em]
+      keep $\reenc{R_D}G\ket{D_j}$}
+
+  \note{
+    \scriptsize
+    \begin{itemize}
+      \setlength{\itemsep}{0pt}
+      \item This is the same interaction as the previous frame. The coral symbols are the only additions: a fresh Pauli re-encryption and the corrections it induces.
+      \item $R$ is a uniformly random Pauli on the permuted three-register block, sent to Bob as a classical description. Bob applies $G^{\otimes3}$ first and then $R$.
+      \item Conjugating into the hidden register order gives $\pi_E^{-1}R\pi_E=R_D\otimes R_0\otimes R_+$. Bob knows $R$ in permuted coordinates but does not know which factor acts on data, $0$-traps, or $+$-traps.
+      \item In the manuscript notation, $R$ is $P'_{\pi_E}$ and $(R_D,R_0,R_+)=(Q',P'_0,P'_+)$. The talk renames them so that $R$ reads as re-encryption.
+      \item Since the directly supported gate normalizes Paulis, write $G^\dagger R_sG=X^{a_s}Z^{b_s}$. After applying $\pi_0^{-1}$ and $\pi_+^{-1}$, the expected strings are $(a_0\oplus e,u)$ and $(b_+\oplus f,v)$.
+      \item On acceptance the TTP retains $R_DG\ket{D_j}$ and updates the data pad to $Q_{\mathrm{new}}=R_DGQG^\dagger$.
+      \item A tensor product of three independent $w$-qubit Paulis is equivalently uniform in $\mathcal P_{3w}$; global Pauli phases are irrelevant.
       \item This is still a candidate construction. The complete coherent-attack and culprit-attribution arguments are being finalized.
     \end{itemize}
   }
@@ -1373,7 +1338,7 @@
   \note{
     \scriptsize
     \begin{itemize}
-      \item For Alice's asset, Alice is the sender and Bob the verifier. Bob evaluates the actual gate and Alice checks; the identity pass reverses their roles.
+      \item For Alice's input, Alice is the sender and Bob the verifier. Bob evaluates the actual gate and Alice checks; the identity pass reverses their roles.
       \item Show all eight arrows even if the labels are abbreviated; the repeated geometry is the point.
       \item A circuit is not eight messages total: the pair repeats for every directly supported instruction and each gate call repeats over every physical coordinate.
       \item The identity pass makes both parties serve as evaluator and refreshes the hidden state before the next instruction.
@@ -1389,67 +1354,70 @@
       >={Latex[length=2.5mm]},
       flow/.style={->,very thick,draw=QFETeal},
       stage/.style={draw=QFEInk,fill=QFEFog,rounded corners=4pt,
-        text width=3.15cm,minimum height=0.98cm,align=center,font=\scriptsize},
+        text width=4.25cm,minimum height=0.82cm,align=center,font=\scriptsize},
       decision/.style={draw=QFEInk,fill=QFEInk,rounded corners=4pt,
-        minimum width=3.45cm,minimum height=0.70cm,text=white,align=center,font=\small\bfseries},
+        minimum width=4.65cm,minimum height=0.55cm,text=white,align=center,font=\scriptsize\bfseries},
       party/.style={font=\small\bfseries}
     ]
-    \path[use as bounding box] (-5.72,-2.36) rectangle (5.72,2.20);
-    \node[stage,fill=QFEPale] (encode) at (-4.02,1.55)
-      {\textbf{1\quad Input encoding}\\both inputs\\go to the TTP};
-    \node[stage] (verifya) at (0,1.55)
+    \path[use as bounding box] (-5.60,-2.90) rectangle (5.60,2.26);
+    \node[stage,fill=QFEPale,text width=6.15cm,minimum height=0.62cm]
+      (encode) at (0,1.82)
+      {\textbf{1\quad Input encoding}\quad both inputs go to the TTP};
+    \node[stage] (verifya) at (-2.70,0.46)
       {\textbf{2\quad $\pi_{\mathsf{circuit}}(\asset{A})$}\\Bob evaluates; Alice checks};
-    \node[stage] (verifyb) at (4.02,1.55)
+    \draw[flow] (encode.south) -- ++(0,-0.27) -| (verifya.north);
+    \node[stage] (verifyb) at (2.70,0.46)
       {\textbf{3\quad $\pi_{\mathsf{circuit}}(\asset{B})$}\\Alice evaluates; Bob checks};
-    \draw[flow] (encode) -- (verifya);
-    \draw[flow] (verifya) -- (verifyb);
-
-    \node[decision] (decision) at (0,0.40)
+    \draw[flow] (verifya.east) --
+      node[midway,above=2pt,font=\scriptsize,fill=white,inner sep=1pt] {then}
+      (verifyb.west);
+    \node[decision] (decision) at (0,-0.64)
       {TTP waits for both verification results};
-    \draw[flow] (verifya.south) -- (decision.north);
-    \draw[flow] (verifyb.south) |- (decision.east);
+    \draw[flow] (verifya.south)
+      .. controls ++(0,-0.28) and ++(-0.40,0.24)
+      .. ([xshift=-1.35cm]decision.north);
+    \draw[flow] (verifyb.south)
+      .. controls ++(0,-0.28) and ++(0.40,0.24)
+      .. ([xshift=1.35cm]decision.north);
 
     \draw[draw=QFETeal!70,fill=QFEPale,rounded corners=4pt,thick]
-      (-5.48,-0.25) rectangle (-0.28,-2.17);
-    \node[font=\small\bfseries,text=QFETeal] at (-2.88,-0.52)
+      (-5.35,-1.14) rectangle (-0.25,-2.76);
+    \node[font=\small\bfseries,text=QFETeal] at (-2.80,-1.37)
       {both accept: EXCHANGE};
-    \node[party] (as) at (-4.65,-1.48) {Alice};
-    \node[draw=QFEInk,fill=QFEInk,circle,text=white,minimum size=0.68cm,font=\scriptsize\bfseries]
-      (ts) at (-2.88,-1.48) {TTP};
-    \node[party] (bs) at (-1.12,-1.48) {Bob};
+    \node[party] (as) at (-4.55,-2.18) {Alice};
+    \node[draw=QFEInk,fill=QFEInk,circle,text=white,minimum size=0.58cm,font=\scriptsize\bfseries]
+      (ts) at (-2.80,-2.18) {TTP};
+    \node[party] (bs) at (-1.05,-2.18) {Bob};
     \draw[flow] (ts) -- (as)
-      node[midway,above=2pt,font=\small,fill=QFEPale,inner sep=1pt] {$\qasset{B}$};
+      node[midway,above=2pt,font=\scriptsize,fill=QFEPale,inner sep=1pt] {$\qasset{B}$};
     \draw[flow] (ts) -- (bs)
-      node[midway,above=2pt,font=\small,fill=QFEPale,inner sep=1pt] {$\qasset{A}$};
+      node[midway,above=2pt,font=\scriptsize,fill=QFEPale,inner sep=1pt] {$\qasset{A}$};
 
     \draw[draw=QFEGold!85!black,fill=QFEGoldPale,rounded corners=4pt,thick]
-      (0.28,-0.25) rectangle (5.48,-2.17);
-    \node[font=\small\bfseries,text=QFEGold!70!black] at (2.88,-0.52)
+      (0.25,-1.14) rectangle (5.35,-2.76);
+    \node[font=\small\bfseries,text=QFEGold!70!black] at (2.80,-1.37)
       {otherwise: RETURN};
-    \node[party] (af) at (1.12,-1.48) {Alice};
-    \node[draw=QFEInk,fill=QFEInk,circle,text=white,minimum size=0.68cm,font=\scriptsize\bfseries]
-      (tf) at (2.88,-1.48) {TTP};
-    \node[party] (bf) at (4.65,-1.48) {Bob};
+    \node[party] (af) at (1.05,-2.18) {Alice};
+    \node[draw=QFEInk,fill=QFEInk,circle,text=white,minimum size=0.58cm,font=\scriptsize\bfseries]
+      (tf) at (2.80,-2.18) {TTP};
+    \node[party] (bf) at (4.55,-2.18) {Bob};
     \draw[->,very thick,draw=QFEGold!85!black] (tf) -- (af)
-      node[midway,above=2pt,font=\small,fill=QFEGoldPale,inner sep=1pt] {$\qasset{A}$};
+      node[midway,above=2pt,font=\scriptsize,fill=QFEGoldPale,inner sep=1pt] {$\qasset{A}$};
     \draw[->,very thick,draw=QFEGold!85!black] (tf) -- (bf)
-      node[midway,above=2pt,font=\small,fill=QFEGoldPale,inner sep=1pt] {$\qasset{B}$};
+      node[midway,above=2pt,font=\scriptsize,fill=QFEGoldPale,inner sep=1pt] {$\qasset{B}$};
 
-    \draw[->,thick,draw=QFETeal] (decision.south) -- (-1.15,-0.25);
-    \draw[->,thick,draw=QFEGold!85!black] (decision.south) -- (1.15,-0.25);
+    \draw[->,thick,draw=QFETeal] (decision.south) -- (-1.10,-1.14);
+    \draw[->,thick,draw=QFEGold!85!black] (decision.south) -- (1.10,-1.14);
   \end{tikzpicture}
-
-  \vspace{-0.05em}
-  {\large\bfseries\color{QFETeal}
-    Release neither asset until both checks finish.\par}
 
   \note{
     \scriptsize
     \begin{itemize}
-      \item The two one-sided circuit evaluations leave both processed encrypted assets and their updated pad keys at the TTP until both verification results are known.
-      \item On success the outputs cross. On failure each updated asset returns to its original owner.
-      \item Bob runs the public circuit that validates Alice's asset; Alice runs the circuit validating Bob's. The active source has some subscript naming still being cleaned up.
-      \item Fairness comes from delayed release: neither party gets the other's unique asset before both checks complete.
+      \item The two one-sided circuit evaluations leave both processed encrypted input states and their updated pad keys at the TTP until both verification results are known.
+      \item On success the outputs cross. On failure each updated input state returns to its original owner.
+      \item Bob runs the public circuit that validates Alice's input; Alice runs the circuit validating Bob's.
+      \item Steps 2 and 3 are side by side only to save vertical space. The ``then'' arrow indicates the sequential schedule; no parallel-composition claim is being made.
+      \item Fairness comes from delayed release: neither party gets the other's unique input before both checks complete.
       \item The quantum resources can be prepared in advance. During the exchange, the TTP's quantum behavior is intended to reduce to storage, communication, and hidden permutations implemented with routing/SWAP; checks and key updates are classical.
       \item This removes the copyable-classical-state step from the impossibility argument: the trusted party now holds irreplaceable quantum states.
       \item Say ``candidate construction'' while the complete security proof and several circuit details remain in progress.
@@ -1467,30 +1435,44 @@
   \vspace{0.15em}
   \begin{itemize}
     \setlength{\itemsep}{0.30em}
-    \item encoded, one-time-padded halves of entangled pairs;
-    \item encoded, one-time-padded $\ket 0$ and $\ket T$ blocks;
-    \item gate-dependent hidden $0$- and $+$-test states;
-    \item hidden test states for measurements.
+    \item $(I\otimes\mathsf{TEnc})\ket{\mathrm{EPR}}$ for input encoding;
+    \item $Q_0\,\mathsf{QEnc}(\ket0)$ and $Q_T\,\mathsf{QEnc}(\ket T)$ in the
+      VQFHE evaluation key, where $\ket T:=T\ket+$;
+    \item $X^x\ket0$ and $Z^z\ket+$ traps for gate evaluation;
+    \item $G X^x\ket0$ and $G Z^z\ket+$ traps measured during gate verification.
   \end{itemize}
 
-  \vspace{0.20em}
-  Here $\ket T:=T\ket+$ is a one-use resource for implementing a $T$ gate.
-
-  \vspace{0.40em}
-  {\normalsize During the exchange, the TTP only stores and moves quantum
-    states. Resource selection, test checks, and key updates are classical.\par}
+  \vspace{0.65em}
+  \pause
+  {\normalsize \textbf{Online:} quantum storage and routing only; checks and
+    key updates are classical.\par}
 
   \note{
-    \footnotesize
+    \scriptsize
     \begin{itemize}
-      \item This restates the feasibility result as a resource theorem after the audience has seen the full protocol.
-      \item All listed quantum resources are input-independent and can be prepared before Alice or Bob supplies an asset.
-      \item The input resources are encoded, padded retained halves of entangled pairs. Teleportation moves the inputs into them.
-      \item The $\ket0$ and $\ket T$ blocks are work states. A standard injection consumes $\ket T$ using an entangling gate, a measurement, and outcome-dependent corrections.
-      \item Gate calls use gate-dependent $0$- and $+$-test states; measurement calls use their own test states. The exact count depends on the circuit and on whether it is chosen adaptively.
-      \item The TTP also keeps classical one-time-pad keys, secret shuffles, and expected test outcomes.
+      \setlength{\itemsep}{0pt}
+      \item This restates the feasibility result as a resource theorem: every listed quantum state is input-independent and can be prepared before Alice or Bob supplies an input.
+      \item The visible $\mathsf{TEnc}$ in the first bullet is the same schematic shorthand used earlier. The actual retained halves are QEC encoded and one-time padded; teleportation moves the inputs into them.
+      \item ``VQFHE evaluation key'' groups the encoded, padded $\ket0$ and $\ket T$ resources by role. A standard injection consumes $\ket T$ using an entangling gate, a measurement, and corrections.
+      \item The last two visible bullets are the two pairs in a checked-gate call: evaluator traps and fresh known-output traps for the verifier's measurements. Their pads are independent; repeated $x,z$ is schematic. A separate checked computational-basis measurement uses a fresh $X^r\ket0$ trap.
+      \item The TTP also keeps classical one-time-pad keys, secret permutations, and expected test outcomes.
       \item Say ``candidate theorem'': the current manuscript has the construction and a proof sketch, while the complete security proof and some circuit details remain in progress.
     \end{itemize}
+  }
+\end{frame}
+
+% Avoid asking the full-width progress bar to extend past the final frame's
+% title box; the closing and backup pages do not need it.
+\metroset{progressbar=none}
+
+\begin{frame}{Thank You}
+  \centering
+  \vfill
+  {\Huge\bfseries\color{QFETeal}Questions?\par}
+  \vfill
+
+  \note{
+    Stop here for questions. The references that follow are backup pages.
   }
 \end{frame}
 
