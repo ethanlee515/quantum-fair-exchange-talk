@@ -769,7 +769,8 @@ shortened to **TTP**, extra Alice–TTP separation, generous vertical spacing
 between all four arrows, and a right-hand brace labelled “repeat for
 $j=1,\ldots,n$”. Reserve the second preamble line invisibly so the two
 diagrams stay page-registered, and stop the TTP's dotted lane above the local
-check equation.]
+check equation, leaving a clear gap before the two-line `check` / `keep`
+output.]
 
 1. TTP $\rightarrow$ Bob: $\ket W$.
 2. Bob $\rightarrow$ TTP: $G^{\otimes3}\ket W$.
@@ -823,7 +824,8 @@ $$
 $R$, $R_D$, $R_0$, and $R_+$ in coral so this frame is a visual diff. Keep the
 short middle heading **TTP**, the expanded lane/message spacing, and the same
 right-hand repetition brace. The two-line preamble occupies the same height as
-the warm-up preamble, and the TTP lane again ends before the local check.]
+the warm-up preamble, and the TTP lane again ends with a clear gap before the
+local two-line output.]
 
 1. TTP $\rightarrow$ Bob: $\bigl(\ket W,R\bigr)$.
 2. Bob $\rightarrow$ TTP: $R\,G^{\otimes3}\ket W$.
