@@ -413,10 +413,7 @@
       \uncover<2->{%
         \begin{block}{Multiparty quantum computation}
           \small
-          Identifiable abort: identify the cheating party and abort.
-
-          \medskip
-          \cite{alon-et-al-identifiable-abort,chung-et-al-pvia}
+          Identifiable abort: \cite{alon-et-al-identifiable-abort,chung-et-al-pvia}
         \end{block}%
       }
 
@@ -784,9 +781,6 @@
       node[midway,below=5pt,font=\scriptsize\bfseries,text=QFEGold!70!black]
       {$n$ physical qubits};
   \end{tikzpicture}
-
-  \vspace{0.6em}
-  {\small\bfseries One entangled block---not $n$ copies of $\ket\psi$.\par}
 
   \vspace{0.5em}
   \begin{exampleblock}{Correct up to $\lambda$ damaged positions per block}
@@ -1426,7 +1420,7 @@
   \begin{itemize}
     \setlength{\itemsep}{0.30em}
     \item $(I\otimes\mathsf{TEnc})\ket{\mathrm{EPR}}$ for input encoding;
-    \item $\mathsf{TEnc}(\ket0)$ and $\mathsf{TEnc}(\ket+)$ in the VQFHE
+    \item $\mathsf{TEnc}(\ket0)$ and $\mathsf{TEnc}(\ket{T})$ in the VQFHE
       evaluation key;
     \item $X^x\ket0$ and $Z^z\ket+$ traps for gate evaluation;
     \item $G X^x\ket0$ and $G Z^z\ket+$ traps measured during gate verification.
