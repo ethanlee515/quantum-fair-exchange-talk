@@ -894,20 +894,16 @@ The copying step no longer applies when the mediator retains quantum information
 ]
     \node[box,fill=QFEGoldPale,text width=4.4cm,
         minimum height=1.95cm] (prep) at (-3.8,0.8)
-        {\textbf{Trusted preparation}\\[4pt]
-         Encoded EPR pairs\\
-         Workspace and magic states\\
-         Fresh traps};
+        {\textbf{Trusted preprocessing}\\[4pt]
+         };
     \node[box,fill=QFEPale,text width=4.4cm,
         minimum height=1.95cm] (store) at (3.8,0.8)
         {\textbf{Online trusted storage}\\[4pt]
          Receive, store, route, send.\\
-         Classical checks and key updates.};
+         Classical compute.};
     \draw[flow] (prep.east) --
         node[above,font=\scriptsize,align=center] {before inputs\\are supplied}
         (store.west);
-    \node[font=\small,text=QFECoral,align=center] at (3.8,-1.0)
-        {No verification gates or measurements.};
     \node[font=\small,align=center] at (-3.8,-1.0)
         {Depends on the public circuits,\\not on the exchanged inputs.};
 \end{tikzpicture}
@@ -918,8 +914,8 @@ For the public projective verifiers of the formal model:
 perfect honest correctness and statistical simulation security
 against one malicious exchange party.
 \end{exampleblock}
-\smallskip
-No computational assumption.\qquad All online quantum tests are delegated.
+
+
 
 \note{
 The lower bound copied the complete classical state of the trusted party.
