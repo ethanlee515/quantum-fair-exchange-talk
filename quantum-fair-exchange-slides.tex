@@ -144,7 +144,7 @@
 \title{Quantum Fair Exchange}
 \author[Chung, Lee, Raizes, Thyagarajan]{%
   \texorpdfstring{%
-    Hao Chung \quad \underline{Yi Lee} \quad Justin Raizes\\[0.15em]
+    Hao Chung \quad {Yi Lee} \quad Justin Raizes\quad 
     Sri AravindaKrishnan Thyagarajan%
   }{Hao Chung, Yi Lee, Justin Raizes, Sri AravindaKrishnan Thyagarajan}}
 \institute{%
@@ -279,45 +279,45 @@
   }
 \end{frame}
 
-% -----------------------------------------------------------------------------
-% 4. Two kinds of digital cash
-% -----------------------------------------------------------------------------
-
-\begin{frame}{Digital Cash: Blockchain vs. Quantum Money}
-  \small
-  \renewcommand{\arraystretch}{1.45}
-  \setlength{\tabcolsep}{6pt}
-  \begin{tabularx}{\textwidth}{%
-      >{\raggedright\arraybackslash\bfseries}p{0.18\textwidth}
-      >{\raggedright\arraybackslash}X
-      >{\raggedright\arraybackslash}X}
-    \toprule
-    & \textbf{Blockchain Cryptocurrency} & \textbf{Quantum Money} \\
-    \midrule
-    Minting & Network rules (e.g.\ mining) & Bank \\
-    Transfer & New block & Send the quantum state \\
-    Security & Blockchain consensus & No-cloning \\
-    \rowcolor{QFEGoldPale}
-    Fair exchange & Atomic swap, smart contract, etc. &
-      \centering\arraybackslash\textcolor{QFEGold}{\Large\bfseries ???} \\
-    \bottomrule
-  \end{tabularx}
-
-  \note{
-    \footnotesize
-    \begin{itemize}
-      \setlength{\itemsep}{0pt}
-      \item Cryptocurrency and quantum money are two very different approaches to digital cash.
-      \item For cryptocurrency, minting follows network rules---for example, proof-of-work mining. Do not imply that every cryptocurrency uses mining.
-      \item The security row compresses two different threats: blockchain consensus prevents double spending, while quantum-money security prevents counterfeiting.
-      \item The transfer row is a cartoon: a cryptocurrency transfer is included and confirmed in a new block, whereas quantum money transfers the state itself.
-      \item The bank may mint quantum money without mediating every payment.
-      \item Atomic swaps and smart contracts are familiar mechanisms for fair exchange on blockchains.
-      \item Pause at the final ``???'' and ask for the analogue for quantum money.
-      \item No-cloning alone is not a construction of secure quantum money; this table is deliberately simplified.
-    \end{itemize}
-  }
-\end{frame}
+%% -----------------------------------------------------------------------------
+%% 4. Two kinds of digital cash
+%% -----------------------------------------------------------------------------
+%
+%\begin{frame}{Digital Cash: Blockchain vs. Quantum Money}
+%  \small
+%  \renewcommand{\arraystretch}{1.45}
+%  \setlength{\tabcolsep}{6pt}
+%  \begin{tabularx}{\textwidth}{%
+%      >{\raggedright\arraybackslash\bfseries}p{0.18\textwidth}
+%      >{\raggedright\arraybackslash}X
+%      >{\raggedright\arraybackslash}X}
+%    \toprule
+%    & \textbf{Blockchain Cryptocurrency} & \textbf{Quantum Money} \\
+%    \midrule
+%    Minting & Network rules (e.g.\ mining) & Bank \\
+%    Transfer & New block & Send the quantum state \\
+%    Security & Blockchain consensus & No-cloning \\
+%    \rowcolor{QFEGoldPale}
+%    Fair exchange & Atomic swap, smart contract, etc. &
+%      \centering\arraybackslash\textcolor{QFEGold}{\Large\bfseries ???} \\
+%    \bottomrule
+%  \end{tabularx}
+%
+%  \note{
+%    \footnotesize
+%    \begin{itemize}
+%      \setlength{\itemsep}{0pt}
+%      \item Cryptocurrency and quantum money are two very different approaches to digital cash.
+%      \item For cryptocurrency, minting follows network rules---for example, proof-of-work mining. Do not imply that every cryptocurrency uses mining.
+%      \item The security row compresses two different threats: blockchain consensus prevents double spending, while quantum-money security prevents counterfeiting.
+%      \item The transfer row is a cartoon: a cryptocurrency transfer is included and confirmed in a new block, whereas quantum money transfers the state itself.
+%      \item The bank may mint quantum money without mediating every payment.
+%      \item Atomic swaps and smart contracts are familiar mechanisms for fair exchange on blockchains.
+%      \item Pause at the final ``???'' and ask for the analogue for quantum money.
+%      \item No-cloning alone is not a construction of secure quantum money; this table is deliberately simplified.
+%    \end{itemize}
+%  }
+%\end{frame}
 
 % -----------------------------------------------------------------------------
 % 5--8. The functionality sequence
@@ -394,6 +394,7 @@
     \end{itemize}
   }
 \end{frame}
+
 
 % -----------------------------------------------------------------------------
 % 9. Related work
@@ -487,6 +488,103 @@
   }
 \end{frame}
 
+
+
+\begin{frame}{Contributions in detail}
+
+\footnotesize
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.20}
+
+\noindent
+\begin{tabularx}{\linewidth}{@{}
+    >{\raggedright\arraybackslash}p{2.65cm}
+    >{\raggedright\arraybackslash}p{3.55cm}
+    >{\raggedright\arraybackslash}X
+@{}}
+
+\toprule
+\textbf{Result}
+&
+\textbf{Trusted resources}
+&
+\textbf{Guarantee and scope}
+\\
+\midrule
+
+Unconditional barrier
+&
+Classical state and messages
+&
+No perfect completeness with exact original state recovery
+when both $\dim S_b\geq 2$.
+\\
+
+Computational barrier
+&
+Classical state and messages
+&
+No efficient exchange with negligible error and valid outputs
+for computationally unclonable states.
+\\
+
+Construction
+&
+Trusted preprocessing and online quantum storage
+&
+Perfect honest correctness on valid inputs and statistical
+simulation against one malicious exchange party.
+\\
+
+\bottomrule
+\end{tabularx}
+
+
+\smallskip
+
+The construction requires no computational assumption.
+
+
+\end{frame}
+
+\begin{frame}{Gaurantees we want}
+  \small
+  
+  \vspace{0.35em}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.61\textwidth}
+
+        \vspace{0.45em}
+        {\large\bfseries Correctness\par}
+        \vspace{0.15em}
+        If both parties are honest, they accept and receive each other's states.
+      
+        \vspace{0.85em}
+        {\large\bfseries Soundness\par}
+        \vspace{0.15em}
+        An honest party leaves with a valid state:
+        \[
+          \begin{aligned}
+            \acclabel&\ \Longrightarrow\ \text{the other party's input},\\
+            \rejlabel&\ \Longrightarrow\ \text{its own input}.
+          \end{aligned}
+        \]
+      
+
+  \end{columns}
+
+  \note{
+    \footnotesize
+    \begin{itemize}
+      \item This is the bridge from the impossibility result to the candidate construction: allowing the TTP to hold quantum states removes the copyable-classical-state step.
+      \item Formally, both guarantees hold except with negligible probability. On accept, the honest party's output is accepted by the other party's verifier; on reject, it is accepted by its own verifier.
+      \item The active manuscript currently contains a proof sketch for these property-based guarantees. Several protocol details and the full proof are still being finalized.
+      \item Simulation-based security that composes is future work. Do not claim a particular composable framework yet.
+      \item Transition: what changes when the trusted party can actually hold quantum information? Show the whole construction in two pictures before unpacking the machinery.
+    \end{itemize}
+  }
+\end{frame}
 % -----------------------------------------------------------------------------
 % 11--13. Impossibility via a direct cloning reduction
 % -----------------------------------------------------------------------------
@@ -512,17 +610,6 @@
       =\Omega\!\left(\dfrac{1}{T}\right).$
   \end{alertblock}
 
-  \note{
-    \footnotesize
-    \begin{itemize}
-      \item Hard-code perfect honest correctness for the talk: $p=1$. The general statement replaces $1/(2T)$ by $p/(2T)$, up to fairness and correctness errors.
-      \item The $1/T$ quantity is the cloning attack's success scale, not an upper bound on honest protocol success.
-      \item Operational unclonability means that, from one identified input state, producing two usable versions of that same input state has negligible probability.
-      \item Textbook deterministic no-cloning alone is not a quantitative security game. BB84 is one concrete witness used by the longer manuscript proof; omit it here.
-      \item Alice and Bob may exchange quantum messages. Only the trusted party is restricted to copyable classical state.
-      \item Keep the statement informal while the complete model and error parameters are still being finalized.
-    \end{itemize}
-  }
 \end{frame}
 
 \begin{frame}{Reduction Intuition}
@@ -555,15 +642,7 @@
   {\LARGE\bfseries\color{QFETeal}
     $\Pr[t^*=t]=1/T$.\par}
 
-  \note{
-    \footnotesize
-    \begin{itemize}
-      \item This is explicitly an intuition slide. A general protocol need not send raw input registers or have one sharp exchange round.
-      \item In the sharp cartoon, choosing the exchange round costs probability $1/T$.
-      \item Formally, the proof uses same/adjacent stopping experiments and obtains a mismatch of order $1/T$ by averaging. Do not charge a second random-guess loss on top of that.
-      \item Keep all of that bookkeeping out of the audience-facing story.
-    \end{itemize}
-  }
+  
 \end{frame}
 
 \begin{frame}{The Reduction}
@@ -605,69 +684,436 @@
   \questionbox{\textbf{No recovery} $\Rightarrow$ unfair.\qquad
     \textbf{Recovery} $\Rightarrow$ two copies of \qasset{A}.}
 
-  \note{
-    \footnotesize
-    \begin{itemize}
-      \item This is the operational cartoon. The arrows need not literally be raw input registers.
-      \item Because the TTP holds only bits, the reduction can copy those bits before round $t^*$ and let the two stopping experiments finish separately.
-      \item If Bob accepts, he has Alice's identified input. If Alice rejects, input-preserving fairness must return that same identified input to her.
-      \item If Alice receives nothing, fairness is already broken. If she receives her input back, the two outputs constitute a clone.
-      \item Formally, same-cut and adjacent-cut cases show that one of the $T$ locations produces this mismatch with probability $\Omega(1/T)$.
-      \item No quantum register is copied as an intermediate step; the contradiction is at the two final outputs.
-    \end{itemize}
-  }
+
 \end{frame}
 
-% -----------------------------------------------------------------------------
+
+
+
+% Slide 5: The joint stopping experiment.
+\begin{frame}{Copy the mediator, not the quantum inputs}
+\small
+\setlength{\parskip}{0pt}
+\usebeamercolor{normal text}
+\usebeamercolor{example text}
+
+Consider a protocol with a \textbf{classical TTP} and a polynomial round bound $T$.
+The reduction runs an honest prefix up to a fixed cut $t$.
+
+\medskip
+\begin{center}
+\begin{tikzpicture}[
+    x=1cm,y=1cm,>=stealth,
+    every node/.style={font=\small,align=center}
+]
+    \node[
+        draw=normal text.fg!60,
+        fill=normal text.fg!5,
+        rounded corners=2pt,
+        minimum width=2.4cm,
+        minimum height=0.8cm
+    ] (m0) at (-4.3,0)
+        {$M_0$\\$P_0$'s registers};
+
+    \node[
+        draw=normal text.fg,
+        fill=normal text.fg,
+        text=white,
+        rounded corners=2pt,
+        minimum width=2.4cm,
+        minimum height=0.8cm
+    ] (c) at (0,0)
+        {$C$\\classical TTP record};
+
+    \node[
+        draw=normal text.fg!60,
+        fill=normal text.fg!5,
+        rounded corners=2pt,
+        minimum width=2.4cm,
+        minimum height=0.8cm
+    ] (m1) at (4.3,0)
+        {$M_1$\\$P_1$'s registers};
+
+    \node[
+        draw=example text.fg,
+        fill=example text.fg!10,
+        rounded corners=2pt,
+        text width=4.3cm,
+        minimum height=1.0cm
+    ] (left) at (-3.1,-1.8)
+        {$P_0$ continues with $(M_0,C_0)$\\
+         $P_1$ sends nothing};
+
+    \node[
+        draw=normal text.fg!60,
+        fill=normal text.fg!5,
+        rounded corners=2pt,
+        text width=4.3cm,
+        minimum height=1.0cm
+    ] (right) at (3.1,-1.8)
+        {$P_1$ continues with $(M_1,C_1)$\\
+         $P_0$ sends nothing};
+
+    \draw[->,thick,draw=example text.fg]
+        (m0.south) -- ([xshift=-1.2cm]left.north);
+
+    \draw[->,thick,draw=example text.fg]
+        (m1.south) -- ([xshift=1.2cm]right.north);
+
+    \draw[->,thick,dashed,draw=normal text.fg]
+        (c.south) -- (0,-0.85)
+        -| ([xshift=1.2cm]left.north);
+
+    \draw[->,thick,dashed,draw=normal text.fg]
+        (c.south) -- (0,-0.85)
+        -| ([xshift=-1.2cm]right.north);
+
+    \node[
+        fill=white,
+        inner sep=3pt,
+        font=\small\bfseries
+    ] at (0,-0.85) {Copy $C$};
+\end{tikzpicture}
+\end{center}
+
+Each party's output marginal matches an execution in which the other stops at $t$.
+The continuations need not be independent.
+
+\medskip
+\begin{beamercolorbox}[
+    wd=\linewidth,
+    sep=0.8ex,
+    rounded=true,
+    center
+]{block body example}
+Only classical memory is copied.
+No quantum register is copied or rewound.
+\end{beamercolorbox}
+\end{frame}
+
+
+% Slide 6: Why opposite decisions produce duplicate outputs.
+\begin{frame}{A stopping cut turns recovery into copying}
+\small
+\setlength{\parskip}{0pt}
+\setlength{\abovedisplayskip}{4pt}
+\setlength{\belowdisplayskip}{4pt}
+
+First assume \textbf{perfect completeness and exact recovery} of unknown valid pure inputs.
+
+\begin{block}{Why must some cut produce opposite decisions?}
+At cut $0$, neither party can accept without the other's input.
+At cut $T$, both accept.
+In the alternating schedule, only one acceptance probability can change per round.
+Some fixed cut therefore gives
+$$
+    \Pr[\text{opposite decisions}] = \Omega(1/T).
+$$
+\end{block}
+
+\smallskip
+\begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+    \begin{exampleblock}{$P_0$ accepts}
+        It receives $P_1$'s original input $\lvert\psi_1\rangle$.
+    \end{exampleblock}
+
+    \column{0.48\textwidth}
+    \begin{block}{$P_1$ rejects}
+        It recovers its own original input $\lvert\psi_1\rangle$.
+    \end{block}
+\end{columns}
+
+\medskip
+\centering
+Both marginals are pure, so the joint output is $\lvert\psi_1\rangle\otimes\lvert\psi_1\rangle$.
+The opposite disagreement duplicates $P_0$'s input.
+\end{frame}
+
+
+% Slide 7: Two contradictions from the same experiment.
+\begin{frame}{Two ways to rule out the resulting outputs}
+\small
+\setlength{\parskip}{0pt}
+
+The same stopping experiment supports two distinct lower bounds for projective verifiers.
+
+\medskip
+\begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+    \begin{block}{Exact recovery: BB84}
+        When both accepting spaces have dimension at least two, encode an independent BB84 qubit in each input.
+
+        \smallskip
+        Two copies of either challenge raise basis guessing success from $1/2$ to $3/4$.
+
+        \smallskip
+        Guess randomly otherwise, contradicting basis hiding.
+    \end{block}
+
+    \column{0.48\textwidth}
+    \begin{exampleblock}{Valid outputs: unclonability}
+        For an efficient protocol, use one unclonable challenge, a random input slot, and a random cut.
+
+        \smallskip
+        If its owner rejects and the other party accepts, both outputs pass the challenge verifier.
+
+        \smallskip
+        Inverse polynomial success survives negligible errors, without a dimension bound.
+    \end{exampleblock}
+\end{columns}
+\end{frame}% -----------------------------------------------------------------------------
 % 14. Transition from the impossibility result to the candidate construction
 % -----------------------------------------------------------------------------
 
-\begin{frame}{Feasibility: What We Show}
-  \small
-  {\normalsize We have a protocol that satisfies:\par}
-  \vspace{0.35em}
-  \begin{columns}[T,onlytextwidth]
-    \column{0.61\textwidth}
-      \uncover<1->{
-        {\large\bfseries\color{QFETeal}Property-based security\par}
-        \vspace{0.45em}
-        {\large\bfseries Correctness\par}
-        \vspace{0.15em}
-        If both parties are honest, they accept and receive each other's states.
-      }
 
-      \uncover<2->{
-        \vspace{0.85em}
-        {\large\bfseries Soundness\par}
-        \vspace{0.15em}
-        An honest party leaves with a valid state:
-        \[
-          \begin{aligned}
-            \acclabel&\ \Longrightarrow\ \text{the other party's input},\\
-            \rejlabel&\ \Longrightarrow\ \text{its own input}.
-          \end{aligned}
-        \]
-      }
+\begin{frame}[c]{From impossibility to feasibility}
+\centering
 
-    \column{0.34\textwidth}
-      \uncover<3->{
-        {\large\bfseries\color{QFEGold!75!black}Still in progress\par}
-        \vspace{0.45em}
-        Composable security.
-      }
-  \end{columns}
+{\LARGE
+Can \textbf{quantum storage} suffice\\[0.4em]
+without online quantum computation?
+\par}
 
-  \note{
-    \footnotesize
-    \begin{itemize}
-      \item This is the bridge from the impossibility result to the candidate construction: allowing the TTP to hold quantum states removes the copyable-classical-state step.
-      \item Formally, both guarantees hold except with negligible probability. On accept, the honest party's output is accepted by the other party's verifier; on reject, it is accepted by its own verifier.
-      \item The active manuscript currently contains a proof sketch for these property-based guarantees. Several protocol details and the full proof are still being finalized.
-      \item Simulation-based security that composes is future work. Do not claim a particular composable framework yet.
-      \item Transition: what changes when the trusted party can actually hold quantum information? Show the whole construction in two pictures before unpacking the machinery.
-    \end{itemize}
-  }
+
+
 \end{frame}
+
+\begin{frame}{Feasibility: storage without online computation}
+\small
+\setlength{\parskip}{0pt}
+The copying step no longer applies when the mediator retains quantum information.
+
+\medskip
+\centering
+\begin{tikzpicture}[
+    x=1cm,y=1cm,>={Latex[length=2.3mm]},
+    box/.style={draw=QFEInk,rounded corners=3pt,align=center,
+        font=\small,inner sep=6pt},
+    flow/.style={->,very thick,draw=QFETeal}
+]
+    \node[box,fill=QFEGoldPale,text width=4.4cm,
+        minimum height=1.95cm] (prep) at (-3.8,0.8)
+        {\textbf{Trusted preparation}\\[4pt]
+         Encoded EPR pairs\\
+         Workspace and magic states\\
+         Fresh traps};
+    \node[box,fill=QFEPale,text width=4.4cm,
+        minimum height=1.95cm] (store) at (3.8,0.8)
+        {\textbf{Online trusted storage}\\[4pt]
+         Receive, store, route, send.\\
+         Classical checks and key updates.};
+    \draw[flow] (prep.east) --
+        node[above,font=\scriptsize,align=center] {before inputs\\are supplied}
+        (store.west);
+    \node[font=\small,text=QFECoral,align=center] at (3.8,-1.0)
+        {No verification gates or measurements.};
+    \node[font=\small,align=center] at (-3.8,-1.0)
+        {Depends on the public circuits,\\not on the exchanged inputs.};
+\end{tikzpicture}
+
+\medskip
+\begin{exampleblock}{Positive result}
+For the public projective verifiers of the formal model:
+perfect honest correctness and statistical simulation security
+against one malicious exchange party.
+\end{exampleblock}
+\smallskip
+No computational assumption.\qquad All online quantum tests are delegated.
+
+\note{
+The lower bound copied the complete classical state of the trusted party.
+Quantum storage invalidates that particular step, but this observation alone is not a feasibility proof or a memory lower bound.
+The positive theorem uses a trusted source that prepares the full prescribed inventory before the inputs arrive.
+The online trusted party stores and routes registers and performs classical checks and key updates.
+It does not execute verification gates or measurements.
+The scope follows Sections 5 and 6 of the supplied manuscript, which specify projective outcome maps.
+The security statement is standalone statistical simulation security with static corruption of one exchange party.
+Before describing the construction, the next two slides explain its ideal target and the real versus ideal comparison.
+}
+\end{frame}
+
+
+% B. Definition 1 of 2: the ideal functionality.
+\begin{frame}{The ideal task: verify, then exchange or return}
+\small
+\setlength{\parskip}{0pt}
+%$P_0$ is honest in this picture.
+$J_b$ denotes the residual register after $\mathsf{Ver}_b$.
+
+\medskip
+\centering
+\begin{tikzpicture}[
+    x=1cm,y=1cm,>={Latex[length=2.2mm]},
+    flow/.style={->,thick,draw=QFETeal},
+    who/.style={font=\small\bfseries,align=center},
+    lab/.style={font=\scriptsize,align=center,fill=white,inner sep=2pt}
+]
+    \node[who] (honest) at (-5.25,1.95) {Honest $P_0$};
+    \node[who] (sim) at (5.05,1.95) {Simulator $\mathsf{Sim}$};
+    \node[draw=QFEInk,fill=QFEFog,rounded corners=3pt,
+        text width=4.5cm,minimum height=1.65cm,align=center,
+        font=\small] (ideal) at (0,1.05)
+        {\textbf{Ideal functionality $\mathcal F_{\mathsf{FE}}$}\\[4pt]
+         Verify $I_0$ and retain $(f_0,J_0)$.\\
+         Compute $(f_1,J_1)\leftarrow\mathsf{Ver}_1(\widehat I_1)$.\\
+         Keep $f_0$ hidden until release.};
+    \draw[flow] (-5.25,1.15) --
+        node[lab,above] {input $I_0$}
+        ([yshift=0.1cm]ideal.west);
+    \draw[flow] (5.25,1.15) --
+        node[lab,above] {$\widehat I_1$ or $\mathsf{abort}$}
+        ([yshift=0.1cm]ideal.east);
+    \node[font=\scriptsize,text=QFEMuted,align=center]
+        at (5.05,0.25) {May replace its input\\and retain quantum information.};
+
+    % Each lower panel represents a different release branch.
+    \foreach \x/\shade in {-4.45/QFEPale,0/QFEGoldPale,4.45/QFECoralPale} {
+        \draw[draw=QFEInk!35,fill=\shade,rounded corners=3pt]
+            (\x-2.05,-0.6) rectangle (\x+2.05,-2.3);
+    }
+    \node[font=\small\bfseries,text=QFETeal] at (-4.45,-0.88)
+        {Both tests accept};
+    \node[font=\small\bfseries,text=QFEGold!65!black] at (0,-0.88)
+        {A test rejects};
+    \node[font=\small\bfseries,text=QFECoral] at (4.45,-0.88)
+        {Simulator aborts};
+
+    \foreach \x in {-4.45,0,4.45} {
+        \draw[flow] (ideal.south) -- (\x,-0.6);
+        \node[who,font=\scriptsize\bfseries] at (\x-1.62,-1.63) {$P_0$};
+
+        \node[draw=QFEInk,fill=QFEInk,text=white,rounded corners=2pt,
+            inner sep=4pt,font=\scriptsize] (f\x) at (\x,-1.63) {$\mathcal F$};
+    }
+    \foreach \x in {-4.45,0}
+        \node[who,font=\scriptsize\bfseries] at (\x+1.55,-1.63) {$\mathsf{Sim}$};
+    \node[font=\scriptsize,align=center,text width=1.4cm] at (5.75,-1.63)
+        {$\mathsf{Sim}$\\\textcolor{QFECoral}{no delivery}};
+    \draw[flow] (-4.75,-1.63) -- (-5.65,-1.63)
+        node[midway,above,font=\small] {$J_1$};
+    \draw[flow] (-4.15,-1.63) -- (-3.25,-1.63)
+        node[midway,above,font=\small] {$J_0$};
+    \node[font=\scriptsize] at (-4.45,-2.08) {Both receive $\mathsf{Acc}$.};
+
+    \draw[flow] (-0.3,-1.63) -- (-1.2,-1.63)
+        node[midway,above,font=\small] {$J_0$};
+    \draw[flow] (0.3,-1.63) -- (1.2,-1.63)
+        node[midway,above,font=\small] {$J_1$};
+    \node[font=\scriptsize] at (0,-2.08) {Both receive $\mathsf{Rej}$.};
+
+    \draw[flow] (4.15,-1.63) -- (3.25,-1.63)
+        node[midway,above,font=\small] {$J_0$};
+
+    \node[font=\scriptsize] at (4.45,-2.08) {$P_0$ receives $\mathsf{Rej}$.};
+\end{tikzpicture}
+
+%\smallskip
+%\raggedright
+%Fairness specifies the residual states, not merely the decision bits.
+%For a valid input under the projective model, verification leaves it unchanged.
+
+\note{
+Fix P0 as the honest party only for the picture.
+The definition must hold with either party honest.
+The functionality first verifies the honest input and keeps both its outcome and residual register private.
+The simulator may abort or submit a quantum input of the required dimension, possibly correlated with its retained information.
+It does not learn the honest verification outcome before this choice.
+On submission, the functionality verifies the submitted input.
+Both accepting flags cause the residual registers to cross.
+If either test rejects, each residual register returns to its owner.
+On abort, the honest party receives its own residual register and rejection, with no final delivery to the simulator.
+No delivery does not erase the simulator's earlier workspace.
+The arrows refer to registers and preserve their joint correlations.
+They do not assert that the two residual registers form a product state.
+This is the ideal functionality, not a trusted implementation restricted to storage.
+}
+\end{frame}
+
+
+% C. Definition 2 of 2: joint real versus ideal security.
+\begin{frame}{Security compares the complete joint output}
+\small
+\setlength{\parskip}{0pt}
+Each experiment starts from the same arbitrary joint state $\rho_{I_0 I_1 E}$.
+The inputs and the adversary's register $E$ may be entangled.
+
+\medskip
+\centering
+\begin{tikzpicture}[
+    x=1cm,y=1cm,>={Latex[length=2.1mm]},
+    actor/.style={draw=QFEInk,fill=white,rounded corners=2pt,
+        text width=1.65cm,minimum height=0.72cm,
+        align=center,font=\footnotesize},
+    link/.style={<->,thick,draw=QFETeal},
+    outarrow/.style={->,thick,draw=QFEInk!65},
+    result/.style={draw=QFEInk!40,fill=white,rounded corners=2pt,
+        minimum width=4.7cm,minimum height=0.55cm,
+        align=center,font=\small}
+]
+    \draw[draw=QFEInk!25,fill=QFEFog,rounded corners=4pt]
+        (-6.45,-2.05) rectangle (-0.55,1.55);
+    \draw[draw=QFETeal!40,fill=QFEPale,rounded corners=4pt]
+        (0.55,-2.05) rectangle (6.45,1.55);
+    \node[font=\small\bfseries] at (-3.5,1.25) {Real execution};
+    \node[font=\small\bfseries,text=QFETeal] at (3.5,1.25) {Ideal execution};
+
+    \node[actor] (h) at (-5.2,0.5) {Honest\\$P_0$};
+    \node[actor,draw=QFECoral,fill=QFECoralPale] (a) at (-1.8,0.5)
+        {Adversary\\$\mathcal A$};
+    \node[actor,fill=QFEGoldPale] (t) at (-3.5,-0.5) {Trusted $\mathcal T$};
+    \draw[link] (h.east) -- (a.west);
+    \draw[link] (h.south east) -- (t.north west);
+    \draw[link] (a.south west) -- (t.north east);
+    \node[result] (ro) at (-3.5,-1.55) {Joint output on $O_0 O_{\mathsf{adv}}$};
+    \draw[outarrow] (h.west) -- (-6.2,0.5) |- (ro.west);
+    \draw[outarrow] (a.east) -- (-0.8,0.5) |- (ro.east);
+
+    \node[actor] (hi) at (1.8,0.5) {Honest\\$P_0$};
+    \node[actor,draw=QFECoral,fill=QFECoralPale] (s) at (5.2,0.5)
+        {Simulator\\$\mathsf{Sim}$};
+    \node[actor,fill=QFEInk,text=white] (f) at (3.5,-0.5)
+        {$\mathcal F_{\mathsf{FE}}$};
+    \draw[link] (hi.south east) -- (f.north west);
+    \draw[link] (s.south west) -- (f.north east);
+    \node[result] (io) at (3.5,-1.55) {Joint output on $O_0 O_{\mathsf{adv}}$};
+    \draw[outarrow] (hi.west) -- (0.8,0.5) |- (io.west);
+    \draw[outarrow] (s.east) -- (6.2,0.5) |- (io.east);
+    \node[font=\Large,text=QFETeal] at (0,-1.55) {$\approx$};
+\end{tikzpicture}
+
+\smallskip
+$$
+    \forall\mathcal A\ \exists\mathsf{Sim}\ \forall\rho:
+    \quad
+    \frac12\bigl\|
+       \mathsf{REAL}_{\Pi,\mathcal A}(\rho)
+       -\mathsf{IDEAL}_{\mathsf{Sim}}(\rho)
+    \bigr\|_1
+    \leq \operatorname{negl}(\kappa).
+$$
+\raggedright
+\footnotesize
+$O_0$: honest decision and quantum state.
+$O_{\mathsf{adv}}$: adversarial output, including retained information.
+
+\note{
+The diagrams represent separate experiments, not two physical copies of an unknown input.
+Both start from the same specified joint density operator.
+In the real world the honest party and the trusted party execute the protocol against an arbitrary quantum adversary.
+In the ideal world the simulator gets the corrupted input and auxiliary information and uses only the corrupted interface of the functionality.
+The same simulator must work for every initial joint input state.
+Its overhead is polynomial in the adversary's running time and the public parameters.
+The comparison includes the honest output jointly with the adversary's output.
+Correct marginal outputs alone are insufficient because their correlations may distinguish the two experiments.
+The trusted party's private memory is traced out, not published to the adversary.
+The definition is standalone and permits static malicious corruption of either exchange party.
+It is not a claim of universally composable security.
+}
+\end{frame}
+
+
+
 
 % -----------------------------------------------------------------------------
 % 15--16. Protocol sketch: what the background must enable
